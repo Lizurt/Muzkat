@@ -12,6 +12,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 public class MainActivity extends AppCompatActivity {
+    private String currLogin = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,4 +32,11 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
     }
 
+    public String getCurrLogin() {
+        return currLogin;
+    }
+
+    public void setCurrLogin(String currLogin) {
+        this.currLogin = currLogin;
+    }
 }
