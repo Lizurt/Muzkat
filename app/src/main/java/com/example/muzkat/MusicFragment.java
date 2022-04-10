@@ -73,7 +73,7 @@ public class MusicFragment extends Fragment {
         if (mainActivity == null) {
             throw new ClassCastException("Couldn't get the main activity.");
         }
-        if (mainActivity.getCurrLogin().isEmpty()) {
+        if (mainActivity.getCurrUser() == null) {
             view.findViewById(R.id.bAddMusic).setVisibility(View.GONE);
         }
     }

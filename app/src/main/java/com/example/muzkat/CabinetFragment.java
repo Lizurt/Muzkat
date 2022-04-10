@@ -69,8 +69,8 @@ public class CabinetFragment extends Fragment {
         if (mainActivity == null) {
             throw new ClassCastException("Couldn't get the main activity.");
         }
-        if (!mainActivity.getCurrLogin().isEmpty()) {
-            onLogin(mainActivity.getCurrLogin());
+        if (mainActivity.getCurrUser() != null) {
+            onLogin(mainActivity.getCurrUser());
         }
         this.retrofitService = new RetrofitService();
         this.genreApi = retrofitService.getRetrofit().create(GenreApi.class);
@@ -83,14 +83,14 @@ public class CabinetFragment extends Fragment {
     public void onLogout() {
         mainActivity.findViewById(R.id.layoutCabinetAnon).setVisibility(View.VISIBLE);
         mainActivity.findViewById(R.id.layoutCabinetDeanon).setVisibility(View.GONE);
-        mainActivity.setCurrLogin("");
+        mainActivity.setCurrUser(null);
     }
 
 
-    public void onLogin(String login) {
+    public void onLogin(UserEntity userEntity) {
         mainActivity.findViewById(R.id.layoutCabinetAnon).setVisibility(View.GONE);
         mainActivity.findViewById(R.id.layoutCabinetDeanon).setVisibility(View.VISIBLE);
-        mainActivity.setCurrLogin(login);
+        mainActivity.setCurrUser(null);
     }
 
     private void initButtons(View view) {
@@ -99,60 +99,84 @@ public class CabinetFragment extends Fragment {
     }
 
     private void onLoginButtonClicked(View view) {
-        List<UserEntity> users;
-        try {
-            users = userApi.getAllUsers().execute().body();
-            if (users == null || users.size() == 0) {
-                return;
-            }
-            for (UserEntity userEntity : users) {
-                if (userEntity.getLogin().equals(mainActivity.getCurrLogin())) {
-                    onLogin(userEntity.getLogin());
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        EditText etLogin = mainActivity.findViewById(R.id.etLogin);
+        String login = etLogin.getText().toString();
+        if (login.isEmpty()) {
+            Toast.makeText(mainActivity, "You should enter a login.", Toast.LENGTH_SHORT).show();
+            return;
         }
+        EditText etPassword = mainActivity.findViewById(R.id.etPassword);
+        String password = etPassword.getText().toString();
+        if (password.isEmpty()) {
+            Toast.makeText(mainActivity, "You should enter a password.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        UserEntity userEntity = new UserEntity();
+        userEntity.setLogin(login);
+        userEntity.setPassword(password);
+        userApi.tryLogin(userEntity).enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(@NotNull Call<Boolean> call, @NotNull Response<Boolean> response) {
+                if (!response.body()) {
+                    Toast.makeText(
+                            mainActivity,
+                            "Wrong login or password.",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    return;
+                }
+                mainActivity.setCurrUser(userEntity);
+                onLogin(userEntity);
+                Toast.makeText(mainActivity, "Logged in successfully.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                Toast.makeText(mainActivity, "Login failed.", Toast.LENGTH_SHORT).show();
+                Logger.getLogger(mainActivity.getClass().getName()).log(
+                        Level.SEVERE, "Login failed.", t
+                );
+            }
+        });
     }
 
     private void onLogonButtonClicked(View view) {
-        userApi.getAllUsers().enqueue(new Callback<List<UserEntity>>() {
+        EditText etLogin = mainActivity.findViewById(R.id.etLogin);
+        String login = etLogin.getText().toString();
+        if (login.isEmpty()) {
+            Toast.makeText(mainActivity, "You should enter a login.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        EditText etPassword = mainActivity.findViewById(R.id.etPassword);
+        String password = etPassword.getText().toString();
+        if (password.isEmpty()) {
+            Toast.makeText(mainActivity, "You should enter a password.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        UserEntity userEntity = new UserEntity();
+        userEntity.setLogin(login);
+        userEntity.setPassword(password);
+        userApi.tryLogon(userEntity).enqueue(new Callback<Boolean>() {
             @Override
-            public void onResponse(Call<List<UserEntity>> call, Response<List<UserEntity>> response) {
-                List<UserEntity> users = response.body();
-                if (users != null) {
-                    for (UserEntity userEntity : users) {
-                        if (userEntity.getLogin().equals(mainActivity.getCurrLogin())) {
-                            Toast.makeText(mainActivity, "The login is already occupied.", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                    }
+            public void onResponse(@NotNull Call<Boolean> call, @NotNull Response<Boolean> response) {
+                if (!response.body()) {
+                    Toast.makeText(
+                            mainActivity,
+                            "Failed to logon - the login is already occupied.",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    return;
                 }
-                UserEntity newUser = new UserEntity();
-                EditText etLogin = view.getRootView().findViewById(R.id.etLogin);
-                newUser.setLogin(String.valueOf(etLogin.getText()));
-                EditText etPassword = view.getRootView().findViewById(R.id.etPassword);
-                newUser.setPassword(String.valueOf(etPassword.getText()));
-                // welcome to the callback hell
-                userApi.saveUser(newUser).enqueue(new Callback<UserEntity>() {
-                    @Override
-                    public void onResponse(Call<UserEntity> call, Response<UserEntity> response) {
-                        Toast.makeText(mainActivity, "Logon success.", Toast.LENGTH_SHORT).show();
-                        onLogin(newUser.getLogin());
-                    }
-
-                    @Override
-                    public void onFailure(Call<UserEntity> call, Throwable t) {
-                        Toast.makeText(mainActivity, "Logon failed.", Toast.LENGTH_SHORT).show();
-                        Logger.getLogger(mainActivity.getClass().getName()).log(
-                                Level.SEVERE, "Logon failed.", t
-                        );
-                    }
-                });
+                Toast.makeText(
+                        mainActivity,
+                        "Logged on successfully.",
+                        Toast.LENGTH_SHORT
+                ).show();
+                onLogin(userEntity);
             }
 
             @Override
-            public void onFailure(Call<List<UserEntity>> call, Throwable t) {
+            public void onFailure(Call<Boolean> call, Throwable t) {
                 Toast.makeText(mainActivity, "Logon failed.", Toast.LENGTH_SHORT).show();
                 Logger.getLogger(mainActivity.getClass().getName()).log(
                         Level.SEVERE, "Logon failed.", t

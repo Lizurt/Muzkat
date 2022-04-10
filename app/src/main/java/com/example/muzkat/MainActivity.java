@@ -2,6 +2,7 @@ package com.example.muzkat;
 
 import android.os.Bundle;
 
+import com.example.muzkat.entities.UserEntity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,7 +13,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 public class MainActivity extends AppCompatActivity {
-    private String currLogin = "";
+    private UserEntity currUser = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,11 +33,11 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
     }
 
-    public String getCurrLogin() {
-        return currLogin;
+    public UserEntity getCurrUser() {
+        return currUser;
     }
 
-    public void setCurrLogin(String currLogin) {
-        this.currLogin = currLogin;
+    public void setCurrUser(UserEntity currUser) {
+        this.currUser = currUser;
     }
 }
