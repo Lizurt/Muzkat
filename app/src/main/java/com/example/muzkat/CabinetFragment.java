@@ -69,14 +69,14 @@ public class CabinetFragment extends Fragment {
         if (mainActivity == null) {
             throw new ClassCastException("Couldn't get the main activity.");
         }
-        if (mainActivity.getCurrUser() != null) {
-            onLogin(mainActivity.getCurrUser());
-        }
         this.retrofitService = new RetrofitService();
         this.genreApi = retrofitService.getRetrofit().create(GenreApi.class);
         this.authorApi = retrofitService.getRetrofit().create(AuthorApi.class);
         this.userApi = retrofitService.getRetrofit().create(UserApi.class);
         this.musicApi = retrofitService.getRetrofit().create(MusicApi.class);
+        if (mainActivity.getCurrUser() != null) {
+            onLogin(mainActivity.getCurrUser());
+        }
         initButtons(view);
     }
 
@@ -131,7 +131,7 @@ public class CabinetFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<Boolean> call, Throwable t) {
+            public void onFailure(@NotNull Call<Boolean> call, @NotNull Throwable t) {
                 Toast.makeText(mainActivity, "Login failed.", Toast.LENGTH_SHORT).show();
                 Logger.getLogger(mainActivity.getClass().getName()).log(
                         Level.SEVERE, "Login failed.", t
@@ -176,7 +176,7 @@ public class CabinetFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<Boolean> call, Throwable t) {
+            public void onFailure(@NotNull Call<Boolean> call, @NotNull Throwable t) {
                 Toast.makeText(mainActivity, "Logon failed.", Toast.LENGTH_SHORT).show();
                 Logger.getLogger(mainActivity.getClass().getName()).log(
                         Level.SEVERE, "Logon failed.", t
