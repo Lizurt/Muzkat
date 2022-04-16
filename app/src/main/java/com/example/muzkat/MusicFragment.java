@@ -77,11 +77,29 @@ public class MusicFragment extends Fragment {
         this.rvMusicList = view.findViewById(R.id.rvMusicList);
         rvMusicList.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
-        askServerToFillMusicList();
+        if (mainActivity.getCurrUser() == null) {
+            askServerToFillMusicListRandomly();
+        } else {
+            askServerToFillMusicListSmartly();
+        }
     }
 
-    private void askServerToFillMusicList() {
-        musicApi.getAllMusic().enqueue(new Callback<List<MusicEntity>>() {
+    private void askServerToFillMusicListSmartly() {
+        musicApi.getMatching(8, mainActivity.getCurrUser()).enqueue(new Callback<List<MusicEntity>>() {
+            @Override
+            public void onResponse(@NotNull Call<List<MusicEntity>> call, @NotNull Response<List<MusicEntity>> response) {
+                fillMusicList(response.body());
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<List<MusicEntity>> call, @NotNull Throwable t) {
+                Toast.makeText(mainActivity, "Couldn't get any matching music from the server.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void askServerToFillMusicListRandomly() {
+        musicApi.getRandom(4).enqueue(new Callback<List<MusicEntity>>() {
             @Override
             public void onResponse(@NotNull Call<List<MusicEntity>> call, @NotNull Response<List<MusicEntity>> response) {
                 fillMusicList(response.body());
