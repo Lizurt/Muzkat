@@ -1,0 +1,3 @@
+[submodule "MuzkatServer"]
+	path = MuzkatServer
+	url = https://github.com/Lizurt/MuzkatServer
