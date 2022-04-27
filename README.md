@@ -14,10 +14,10 @@ https://miro.com/app/board/uXjVOLXgQLQ=/
 
 ### Swagger documentation
 Use this link firstly:
-https://app.swaggerhub.com/apis/Lizurt/Muzkat/1.0.0#/
+https://app.swaggerhub.com/apis/Lizurt/Muzkat/1.0.0/
 
 A spare link in case if swaggerhub.com stopped responding:
-https://github.com/Lizurt/MuzkatServer/blob/main/docs/swaggeroffline.html
+https://github.com/Lizurt/MuzkatServer/blob/main/docs/swaggeroffline.pdf
 
 ### Server
 https://github.com/Lizurt/MuzkatServer/tree/main
