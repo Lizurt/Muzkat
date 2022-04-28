@@ -3,6 +3,9 @@ Just another one app for training, nothing to see here.
 
 # Links
 
+### Project report
+https://github.com/Lizurt/Muzkat/blob/main/docs/report.pdf
+
 ### Technical specification
 https://github.com/Lizurt/Muzkat/blob/main/docs/ts.pdf
 
@@ -19,6 +22,6 @@ https://app.swaggerhub.com/apis/Lizurt/Muzkat/1.0.0/
 A spare link in case if swaggerhub.com stopped responding:
 https://github.com/Lizurt/MuzkatServer/blob/main/docs/swaggeroffline.pdf
 
-### Server
+### Server repository
 https://github.com/Lizurt/MuzkatServer/tree/main
 
