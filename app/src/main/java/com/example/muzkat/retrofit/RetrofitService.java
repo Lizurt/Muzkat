@@ -12,7 +12,7 @@ public class RetrofitService {
         // dunno how i'll be getting metrics and statistics with my cool dynamic ip.
         // i shouldn't buy a server machine, yes? Anyway, local ip for now
         this.retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.0.10:8080")
+                .baseUrl("https://muzkat-server.herokuapp.com")
                 .addConverterFactory(GsonConverterFactory.create(new Gson()))
                 .build();
     }
