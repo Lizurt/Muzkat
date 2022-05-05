@@ -25,3 +25,12 @@ https://github.com/Lizurt/MuzkatServer/blob/main/docs/swaggeroffline.pdf
 ### Server repository
 https://github.com/Lizurt/MuzkatServer/tree/main
 
+### APK
+You need Android 6.0+ to run this app.
+
+https://github.com/Lizurt/Muzkat/blob/main/docs/app-debug.apk
+
+### Server
+Deployed on heroku. Use swagger docs to test.
+
+https://muzkat-server.herokuapp.com
