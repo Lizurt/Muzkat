@@ -1,6 +1,6 @@
 package com.example.muzkat.retrofit.api;
 
-import com.example.muzkat.entities.UserEntity;
+import com.example.muzkat.model.entity.UserEntity;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

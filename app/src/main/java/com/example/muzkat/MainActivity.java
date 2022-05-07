@@ -2,7 +2,7 @@ package com.example.muzkat;
 
 import android.os.Bundle;
 
-import com.example.muzkat.entities.UserEntity;
+import com.example.muzkat.model.entity.UserEntity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;

@@ -1,5 +1,6 @@
 package com.example.muzkat;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -12,12 +13,13 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.muzkat.adapter.MusicAdapter;
-import com.example.muzkat.entities.MusicEntity;
+import com.example.muzkat.model.entity.MusicEntity;
 import com.example.muzkat.retrofit.RetrofitService;
 import com.example.muzkat.retrofit.api.AuthorApi;
 import com.example.muzkat.retrofit.api.GenreApi;
 import com.example.muzkat.retrofit.api.MusicApi;
 import com.example.muzkat.retrofit.api.UserApi;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -37,6 +39,7 @@ public class MusicFragment extends Fragment {
     private MainActivity mainActivity;
 
     private RecyclerView rvMusicList;
+    private FloatingActionButton fabAddMusic;
 
     public MusicFragment() {
 
@@ -76,6 +79,12 @@ public class MusicFragment extends Fragment {
 
         this.rvMusicList = view.findViewById(R.id.rvMusicList);
         rvMusicList.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+        fabAddMusic = view.findViewById(R.id.fabAddMusic);
+        fabAddMusic.setOnClickListener(v -> {
+            Intent intentGoToAddNewMusic = new Intent(mainActivity, AddMusicActivity.class);
+            startActivity(intentGoToAddNewMusic);
+        });
 
         if (mainActivity.getCurrUser() == null) {
             askServerToFillMusicListRandomly();

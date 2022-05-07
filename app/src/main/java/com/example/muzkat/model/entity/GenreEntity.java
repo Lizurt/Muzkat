@@ -1,13 +1,12 @@
-package com.example.muzkat.entities;
-
+package com.example.muzkat.model.entity;
 
 import java.util.Set;
 
-public class AuthorEntity {
+public class GenreEntity {
     private int id;
     private String name;
     private Set<UserEntity> favoredUsers;
-    private Set<MusicEntity> musicsByAuthor;
+    private Set<MusicEntity> musicsByGenre;
 
     public int getId() {
         return id;
@@ -33,11 +32,11 @@ public class AuthorEntity {
         this.favoredUsers = favoredUsers;
     }
 
-    public Set<MusicEntity> getMusicsByAuthor() {
-        return musicsByAuthor;
+    public Set<MusicEntity> getMusicsByGenre() {
+        return musicsByGenre;
     }
 
-    public void setMusicsByAuthor(Set<MusicEntity> musicsByAuthor) {
-        this.musicsByAuthor = musicsByAuthor;
+    public void setMusicsByGenre(Set<MusicEntity> musicsByGenre) {
+        this.musicsByGenre = musicsByGenre;
     }
 }

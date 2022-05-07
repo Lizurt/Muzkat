@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.muzkat.entities.UserEntity;
+import com.example.muzkat.model.entity.UserEntity;
 import com.example.muzkat.retrofit.RetrofitService;
 import com.example.muzkat.retrofit.api.AuthorApi;
 import com.example.muzkat.retrofit.api.GenreApi;
@@ -19,8 +19,6 @@ import com.example.muzkat.retrofit.api.UserApi;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

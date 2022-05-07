@@ -1,4 +1,4 @@
-package com.example.muzkat.entities;
+package com.example.muzkat.model.entity;
 
 public class MusicEntity {
     private int id;

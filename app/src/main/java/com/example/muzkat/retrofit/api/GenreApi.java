@@ -1,6 +1,6 @@
 package com.example.muzkat.retrofit.api;
 
-import com.example.muzkat.entities.GenreEntity;
+import com.example.muzkat.model.entity.GenreEntity;
 
 import java.util.List;
 

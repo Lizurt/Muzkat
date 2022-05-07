@@ -17,9 +17,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField 'String', 'SERVER_URL', '"http://' + getLocalIPv4() + ':8080"'
+        }
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField 'String', 'SERVER_URL', '"https://muzkat-server.herokuapp.com"'
         }
     }
     compileOptions {
@@ -29,7 +31,7 @@ android {
 }
 
 dependencies {
-
+    implementation "androidx.fragment:fragment:1.4.1"
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
@@ -43,4 +45,16 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+}
+
+static def getLocalIPv4() {
+    def ip4s = []
+    NetworkInterface.getNetworkInterfaces()
+            .findAll { it.isUp() && !it.isLoopback() && !it.isVirtual() }
+            .each {
+                it.getInetAddresses()
+                        .findAll { !it.isLoopbackAddress() && it instanceof Inet4Address }
+                        .each { ip4s << it.getHostAddress() }
+            }
+    return ip4s.get(0)
 }

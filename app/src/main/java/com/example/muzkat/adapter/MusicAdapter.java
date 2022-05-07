@@ -1,6 +1,5 @@
 package com.example.muzkat.adapter;
 
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.muzkat.R;
-import com.example.muzkat.entities.MusicEntity;
+import com.example.muzkat.model.entity.MusicEntity;
 
 import java.util.List;
 
