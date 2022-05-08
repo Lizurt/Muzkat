@@ -1,7 +1,11 @@
 package com.example.muzkat;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -35,20 +39,36 @@ public class CabinetFragment extends Fragment {
 
     private MainActivity mainActivity;
 
+    private SharedPreferences sharedPreferences;
+
     public CabinetFragment() {
 
-    }
-
-    public static CabinetFragment newInstance() {
-        CabinetFragment fragment = new CabinetFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        this.mainActivity = (MainActivity) getActivity();
+        if (mainActivity == null) {
+            throw new ClassCastException("Couldn't get the main activity.");
+        }
+        this.retrofitService = new RetrofitService();
+        this.genreApi = retrofitService.getRetrofit().create(GenreApi.class);
+        this.authorApi = retrofitService.getRetrofit().create(AuthorApi.class);
+        this.userApi = retrofitService.getRetrofit().create(UserApi.class);
+        this.musicApi = retrofitService.getRetrofit().create(MusicApi.class);
+        sharedPreferences = mainActivity.getSharedPreferences(
+                MainActivity.PREFS_NAME,
+                Context.MODE_PRIVATE
+        );
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initButtons();
+        tryClientLogin();
     }
 
     @Override
@@ -60,45 +80,55 @@ public class CabinetFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_cabinet, container, false);
     }
 
-    @Override
-    public void onViewCreated(@NotNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        this.mainActivity = (MainActivity) getActivity();
-        if (mainActivity == null) {
-            throw new ClassCastException("Couldn't get the main activity.");
-        }
-        this.retrofitService = new RetrofitService();
-        this.genreApi = retrofitService.getRetrofit().create(GenreApi.class);
-        this.authorApi = retrofitService.getRetrofit().create(AuthorApi.class);
-        this.userApi = retrofitService.getRetrofit().create(UserApi.class);
-        this.musicApi = retrofitService.getRetrofit().create(MusicApi.class);
-        if (mainActivity.getCurrUser() != null) {
-            onLogin(mainActivity.getCurrUser());
-        }
-        initButtons(view);
+    private void saveLoginData(String login, String password) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(MainActivity.LOGIN_PREF, login);
+        editor.putString(MainActivity.PASSWORD_PREF, password);
+        editor.apply();
     }
 
-    public void onLogout() {
-        mainActivity.findViewById(R.id.layoutCabinetAnon).setVisibility(View.VISIBLE);
-        mainActivity.findViewById(R.id.layoutCabinetDeanon).setVisibility(View.GONE);
-        mainActivity.setCurrUser(null);
+    private void eraseLoginData() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(MainActivity.LOGIN_PREF, "");
+        editor.putString(MainActivity.PASSWORD_PREF, "");
+        editor.apply();
     }
 
-
-    public void onLogin(UserEntity userEntity) {
+    private void unsafelyClientLogin() {
         mainActivity.findViewById(R.id.layoutCabinetAnon).setVisibility(View.GONE);
         mainActivity.findViewById(R.id.layoutCabinetDeanon).setVisibility(View.VISIBLE);
-        mainActivity.setCurrUser(null);
     }
 
-    private void initButtons(View view) {
-        view.findViewById(R.id.bLogin).setOnClickListener(this::onLoginButtonClicked);
-        view.findViewById(R.id.bLogon).setOnClickListener(this::onLogonButtonClicked);
+    private void tryClientLogin() {
+        String login = sharedPreferences.getString(MainActivity.LOGIN_PREF, "");
+        String password = sharedPreferences.getString(MainActivity.PASSWORD_PREF, "");
+
+        if (login == null || password == null || login.isEmpty() || password.isEmpty()) {
+            return;
+        }
+
+        unsafelyClientLogin();
+    }
+
+    private void clientLogout() {
+        mainActivity.findViewById(R.id.layoutCabinetAnon).setVisibility(View.VISIBLE);
+        mainActivity.findViewById(R.id.layoutCabinetDeanon).setVisibility(View.GONE);
+        eraseLoginData();
+    }
+
+    private void initButtons() {
+        mainActivity.findViewById(R.id.bLogin).setOnClickListener(this::onLoginButtonClicked);
+        mainActivity.findViewById(R.id.bLogon).setOnClickListener(this::onLogonButtonClicked);
+        mainActivity.findViewById(R.id.bLogout).setOnClickListener(this::onLogoutButtonClicked);
+    }
+
+    private void onLogoutButtonClicked(View view) {
+        clientLogout();
     }
 
     private void onLoginButtonClicked(View view) {
         EditText etLogin = mainActivity.findViewById(R.id.etLogin);
-        String login = etLogin.getText().toString();
+        String login = String.valueOf(etLogin.getText());
         if (login.isEmpty()) {
             Toast.makeText(mainActivity, "You should enter a login.", Toast.LENGTH_SHORT).show();
             return;
@@ -123,8 +153,8 @@ public class CabinetFragment extends Fragment {
                     ).show();
                     return;
                 }
-                mainActivity.setCurrUser(userEntity);
-                onLogin(userEntity);
+                saveLoginData(login, password);
+                unsafelyClientLogin();
                 Toast.makeText(mainActivity, "Logged in successfully.", Toast.LENGTH_SHORT).show();
             }
 
@@ -170,7 +200,8 @@ public class CabinetFragment extends Fragment {
                         "Logged on successfully.",
                         Toast.LENGTH_SHORT
                 ).show();
-                onLogin(userEntity);
+                saveLoginData(login, password);
+                unsafelyClientLogin();
             }
 
             @Override

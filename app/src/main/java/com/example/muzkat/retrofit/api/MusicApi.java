@@ -3,6 +3,7 @@ package com.example.muzkat.retrofit.api;
 import com.example.muzkat.model.entity.MusicEntity;
 import com.example.muzkat.model.entity.UserEntity;
 import com.example.muzkat.model.request.AddMusicRequest;
+import com.example.muzkat.model.request.GetMatchingMusicRequest;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public interface MusicApi {
     Call<List<MusicEntity>> getRandom(@Body Integer amount);
 
     @POST("/music/get-matching")
-    Call<List<MusicEntity>> getMatching(@Body Integer amount, @Body UserEntity userEntity);
+    Call<List<MusicEntity>> getMatching(@Body GetMatchingMusicRequest getMatchingMusicRequest);
 
     @PUT("/music/save")
     Call<Boolean> saveMusic(@Body MusicEntity musicEntity);

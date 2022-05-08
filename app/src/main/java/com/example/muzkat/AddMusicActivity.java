@@ -35,50 +35,52 @@ public class AddMusicActivity extends AppCompatActivity {
         etGenre = findViewById(R.id.etGenre);
         RetrofitService retrofitService = new RetrofitService();
         musicApi = retrofitService.getRetrofit().create(MusicApi.class);
-        findViewById(R.id.bAddMusic).setOnClickListener(v -> {
-            String musicName = String.valueOf(etMusic.getText());
-            String authorName = String.valueOf(etAuthor.getText());
-            String genreName = String.valueOf(etGenre.getText());
+        findViewById(R.id.bAddMusic).setOnClickListener(v -> askServerToAddMusic());
+    }
 
-            if (musicName.isEmpty() || authorName.isEmpty() || genreName.isEmpty()) {
+    private void askServerToAddMusic() {
+        String musicName = String.valueOf(etMusic.getText());
+        String authorName = String.valueOf(etAuthor.getText());
+        String genreName = String.valueOf(etGenre.getText());
+
+        if (musicName.isEmpty() || authorName.isEmpty() || genreName.isEmpty()) {
+            Toast.makeText(
+                    this,
+                    "You should fill all the fields.",
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        AddMusicRequest addMusicRequest = new AddMusicRequest();
+        addMusicRequest.setMusicName(musicName);
+        addMusicRequest.setAuthorName(authorName);
+        addMusicRequest.setGenreName(genreName);
+        musicApi.saveMusic(addMusicRequest).enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(@NotNull Call<Boolean> call, @NotNull Response<Boolean> response) {
+                String feedback;
+                if (response.body()) {
+                    feedback = "Successfully added the music to a music list.";
+                } else {
+                    feedback = "Failed to add the music to the music list.";
+                }
                 Toast.makeText(
-                        this,
-                        "You should fill all the fields.",
+                        AddMusicActivity.this,
+                        feedback,
                         Toast.LENGTH_SHORT
                 ).show();
-                return;
+                finish();
             }
 
-            AddMusicRequest addMusicRequest = new AddMusicRequest();
-            addMusicRequest.setMusicName(musicName);
-            addMusicRequest.setAuthorName(authorName);
-            addMusicRequest.setGenreName(genreName);
-            musicApi.saveMusic(addMusicRequest).enqueue(new Callback<Boolean>() {
-                @Override
-                public void onResponse(@NotNull Call<Boolean> call, @NotNull Response<Boolean> response) {
-                    String feedback;
-                    if (response.body()) {
-                        feedback = "Successfully added the music to a music list.";
-                    } else {
-                        feedback = "Failed to add the music to the music list.";
-                    }
-                    Toast.makeText(
-                            AddMusicActivity.this,
-                            feedback,
-                            Toast.LENGTH_SHORT
-                    ).show();
-                    finish();
-                }
-
-                @Override
-                public void onFailure(@NotNull Call<Boolean> call, @NotNull Throwable t) {
-                    Toast.makeText(
-                            AddMusicActivity.this,
-                            "Failed to add the music to the music list - the server isn't responding. ",
-                            Toast.LENGTH_SHORT
-                    ).show();
-                }
-            });
+            @Override
+            public void onFailure(@NotNull Call<Boolean> call, @NotNull Throwable t) {
+                Toast.makeText(
+                        AddMusicActivity.this,
+                        "Failed to add the music to the music list - the server isn't responding. ",
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
         });
     }
 }
