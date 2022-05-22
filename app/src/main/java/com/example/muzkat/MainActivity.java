@@ -2,7 +2,7 @@ package com.example.muzkat;
 
 import android.os.Bundle;
 
-import com.example.muzkat.entities.UserEntity;
+import com.example.muzkat.model.entity.UserEntity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,7 +13,9 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 public class MainActivity extends AppCompatActivity {
-    private UserEntity currUser = null;
+    public final static String PREFS_NAME = "MuzkatPreferences";
+    public final static String LOGIN_PREF = "Login";
+    public final static String PASSWORD_PREF = "Password";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,13 +33,5 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = navHostFragment.getNavController();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
-    }
-
-    public UserEntity getCurrUser() {
-        return currUser;
-    }
-
-    public void setCurrUser(UserEntity currUser) {
-        this.currUser = currUser;
     }
 }

@@ -5,4 +5,14 @@
     <string name="title_notifications">Notifications</string>
     <string name="cab_frag_name">Cabinet</string>
     <string name="mus_frag_name">Music</string>
+    <string name="placeholder">PLACEHOLDER</string>
+    <string name="del">DEL</string>
+    <string name="author_name">Author name</string>
+    <string name="genre_name">Genre name</string>
+    <string name="add_author">Add author</string>
+    <string name="add_genre">Add genre</string>
+    <string name="my_favorite_genres">My favorite genres</string>
+    <string name="add">Add</string>
+    <string name="my_favorite_authors">My favorite authors</string>
+    <string name="logout">Logout</string>
 </resources>

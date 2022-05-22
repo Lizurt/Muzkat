@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AddMusicActivity">
+
+    <TextView
+        android:id="@+id/tvMusicLabel"
+        android:text="Music"
+        android:textAlignment="center"
+        android:textSize="32sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/etMusic"
+        app:layout_constraintTop_toBottomOf="@id/tvMusicLabel"
+        app:layout_constraintStart_toStartOf="@id/tvMusicLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:importantForAutofill="no" />
+
+    <TextView
+        android:id="@+id/tvAuthorLabel"
+        android:text="Author"
+        android:textAlignment="center"
+        android:textSize="32sp"
+        app:layout_constraintTop_toBottomOf="@id/etMusic"
+        app:layout_constraintStart_toStartOf="@id/etMusic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/etAuthor"
+        app:layout_constraintTop_toBottomOf="@id/tvAuthorLabel"
+        app:layout_constraintStart_toStartOf="@id/tvAuthorLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:importantForAutofill="no" />
+
+    <TextView
+        android:id="@+id/tvGenreLabel"
+        android:text="Genre"
+        android:textAlignment="center"
+        android:textSize="32sp"
+        app:layout_constraintTop_toBottomOf="@id/etAuthor"
+        app:layout_constraintStart_toStartOf="@id/etAuthor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/etGenre"
+        app:layout_constraintTop_toBottomOf="@id/tvGenreLabel"
+        app:layout_constraintStart_toStartOf="@id/tvGenreLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:importantForAutofill="no" />
+
+    <Button
+        android:id="@+id/bAddMusic"
+        app:layout_constraintTop_toBottomOf="@id/etGenre"
+        app:layout_constraintStart_toStartOf="@id/etGenre"
+        android:text="Add music"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
