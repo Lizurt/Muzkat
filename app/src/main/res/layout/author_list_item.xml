@@ -19,13 +19,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <ImageButton
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_weight="1"
-            android:id="@+id/bRemoveGenre"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@android:drawable/ic_delete"
-            android:contentDescription="@string/del" />
+            android:layout_height="match_parent" >
+            <ImageButton
+                android:id="@+id/bRemoveAuthor"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@android:drawable/ic_delete"
+                android:contentDescription="@string/del" />
+            <ProgressBar
+                android:visibility="gone"
+                android:id="@+id/pbLoading"
+                app:layout_constraintStart_toStartOf="@id/bRemoveAuthor"
+                app:layout_constraintTop_toTopOf="@id/bRemoveAuthor"
+                android:indeterminate="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

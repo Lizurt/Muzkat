@@ -1,6 +1,7 @@
 package com.example.muzkat;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -39,6 +40,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CabinetFragment extends Fragment {
+    public final static String EXTRA_LOGIN = "LOGIN";
+
     private RetrofitService retrofitService;
     private GenreApi genreApi;
     private AuthorApi authorApi;
@@ -52,7 +55,7 @@ public class CabinetFragment extends Fragment {
     private RecyclerView rvFavAuthors;
     private RecyclerView rvFavGenres;
 
-    private boolean isLoggedIn = false;
+    private String login;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -96,7 +99,27 @@ public class CabinetFragment extends Fragment {
     private void initButtons() {
         mainActivity.findViewById(R.id.bLogin).setOnClickListener(this::onLoginButtonClicked);
         mainActivity.findViewById(R.id.bLogon).setOnClickListener(this::onLogonButtonClicked);
+
         mainActivity.findViewById(R.id.bLogout).setOnClickListener(this::onLogoutButtonClicked);
+        mainActivity.findViewById(R.id.bAddFavoriteAuthor).setOnClickListener(
+                this::onAddFavAuthorButtonClicked
+        );
+        mainActivity.findViewById(R.id.bAddFavoriteGenre).setOnClickListener(
+                this::onAddFavGenreButtonClicked
+        );
+    }
+
+    private void onAddFavGenreButtonClicked(View view) {
+        Intent intent = new Intent(mainActivity, AddFavGenreActivity.class);
+        intent.putExtra(EXTRA_LOGIN, login);
+        startActivity(intent);
+
+    }
+
+    private void onAddFavAuthorButtonClicked(View view) {
+        Intent intent = new Intent(mainActivity, AddFavAuthorActivity.class);
+        intent.putExtra(EXTRA_LOGIN, login);
+        startActivity(intent);
     }
 
     private void saveLoginData(String login, String password) {
@@ -114,25 +137,25 @@ public class CabinetFragment extends Fragment {
     }
 
     private void clientOnLoggedIn() {
-        isLoggedIn = true;
         mainActivity.findViewById(R.id.layoutCabinetAnon).setVisibility(View.GONE);
         mainActivity.findViewById(R.id.layoutCabinetDeanon).setVisibility(View.VISIBLE);
     }
 
     private void onLoggedIn(String login) {
+        this.login = login;
         clientOnLoggedIn();
         askServerToFillFavoriteAuthors(login);
         askServerToFillFavoriteGenres(login);
     }
 
     private void onLoggedOut() {
-        isLoggedIn = false;
+        login = null;
         mainActivity.findViewById(R.id.layoutCabinetAnon).setVisibility(View.VISIBLE);
         mainActivity.findViewById(R.id.layoutCabinetDeanon).setVisibility(View.GONE);
         eraseLoginData();
     }
 
-    private UserEntity tryClientAutoLogin() {
+    private UserEntity tryGetSavedUser() {
         String login = sharedPreferences.getString(MainActivity.LOGIN_PREF, "");
         String password = sharedPreferences.getString(MainActivity.PASSWORD_PREF, "");
 
@@ -147,7 +170,7 @@ public class CabinetFragment extends Fragment {
     }
 
     private void tryAutoLogin() {
-        UserEntity userEntity = tryClientAutoLogin();
+        UserEntity userEntity = tryGetSavedUser();
         if (userEntity == null) {
             return;
         }
@@ -175,7 +198,7 @@ public class CabinetFragment extends Fragment {
     }
 
     private void fillFavAuthors(Set<AuthorEntity> favAuthors) {
-        rvFavAuthors.setAdapter(new AuthorAdapter(new ArrayList<>(favAuthors)));
+        rvFavAuthors.setAdapter(new AuthorAdapter(new ArrayList<>(favAuthors), userApi, login));
     }
 
     private void askServerToFillFavoriteGenres(String login) {
@@ -199,7 +222,7 @@ public class CabinetFragment extends Fragment {
     }
 
     private void fillFavGenres(Set<GenreEntity> favGenres) {
-        rvFavGenres.setAdapter(new GenreAdapter(new ArrayList<>(favGenres)));
+        rvFavGenres.setAdapter(new GenreAdapter(new ArrayList<>(favGenres), userApi, login));
     }
 
     private void onLogoutButtonClicked(View view) {
@@ -258,7 +281,6 @@ public class CabinetFragment extends Fragment {
                 }
                 saveLoginData(userEntity.getLogin(), userEntity.getPassword());
                 onLoggedIn(userEntity.getLogin());
-                isLoggedIn = true;
             }
 
             @Override

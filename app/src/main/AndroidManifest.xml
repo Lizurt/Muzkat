@@ -13,17 +13,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Muzkat"
         android:usesCleartextTraffic="true">
+        <activity android:name=".AddFavGenreActivity"></activity>
+        <activity android:name=".AddFavAuthorActivity" />
         <activity
-            android:parentActivityName=".MainActivity"
+            android:name=".AddMusicActivity"
             android:label="Add music"
-            android:name=".AddMusicActivity">
-
-        </activity>
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

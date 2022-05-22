@@ -17,13 +17,13 @@
                 android:id="@+id/bLogout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Logout" />
+                android:text="@string/logout" />
 
             <TextView
                 android:id="@+id/tvFavoriteAuthors"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="My favorite authors"
+                android:text="@string/my_favorite_authors"
                 android:textAlignment="center"
                 android:textSize="30sp" />
 
@@ -38,13 +38,13 @@
                 android:id="@+id/bAddFavoriteAuthor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Add" />
+                android:text="@string/add" />
 
             <TextView
                 android:id="@+id/tvFavoriteGenres"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="My favorite genres"
+                android:text="@string/my_favorite_genres"
                 android:textAlignment="center"
                 android:textSize="30sp" />
 
@@ -59,7 +59,7 @@
                 android:id="@+id/bAddFavoriteGenre"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Add" />
+                android:text="@string/add" />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

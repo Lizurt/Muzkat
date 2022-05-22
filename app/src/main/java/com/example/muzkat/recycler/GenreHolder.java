@@ -17,7 +17,7 @@ public class GenreHolder extends RecyclerView.ViewHolder {
         this.tvGenreName = itemView.findViewById(R.id.tvGenreName);
     }
 
-    public TextView getTvAuthorName() {
+    public TextView getTvGenreName() {
         return tvGenreName;
     }
 }
