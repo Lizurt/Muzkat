@@ -16,7 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.muzkat.adapter.MusicAdapter;
+import com.example.muzkat.recycler.MusicAdapter;
 import com.example.muzkat.model.entity.MusicEntity;
 import com.example.muzkat.model.request.GetMatchingMusicRequest;
 import com.example.muzkat.retrofit.RetrofitService;
@@ -81,7 +81,7 @@ public class MusicFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.rvMusicList = mainActivity.findViewById(R.id.rvMusicList);
-        rvMusicList.setLayoutManager(new LinearLayoutManager(getView().getContext()));
+        rvMusicList.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
         sharedPreferences = mainActivity.getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE);
 

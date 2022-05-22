@@ -27,6 +27,13 @@
                 android:textAlignment="center"
                 android:textSize="30sp" />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvFavAuthors"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
             <Button
                 android:id="@+id/bAddFavoriteAuthor"
                 android:layout_width="match_parent"
@@ -40,6 +47,13 @@
                 android:text="My favorite genres"
                 android:textAlignment="center"
                 android:textSize="30sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvFavGenres"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+            </androidx.recyclerview.widget.RecyclerView>
 
             <Button
                 android:id="@+id/bAddFavoriteGenre"

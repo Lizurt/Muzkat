@@ -1,4 +1,4 @@
-package com.example.muzkat.adapter;
+package com.example.muzkat.recycler;
 
 import android.view.View;
 import android.widget.TextView;

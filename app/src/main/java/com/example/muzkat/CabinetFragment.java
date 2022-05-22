@@ -7,6 +7,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +16,11 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.muzkat.model.entity.AuthorEntity;
+import com.example.muzkat.model.entity.GenreEntity;
 import com.example.muzkat.model.entity.UserEntity;
+import com.example.muzkat.recycler.AuthorAdapter;
+import com.example.muzkat.recycler.GenreAdapter;
 import com.example.muzkat.retrofit.RetrofitService;
 import com.example.muzkat.retrofit.api.AuthorApi;
 import com.example.muzkat.retrofit.api.GenreApi;
@@ -23,6 +29,8 @@ import com.example.muzkat.retrofit.api.UserApi;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,9 +49,10 @@ public class CabinetFragment extends Fragment {
 
     private SharedPreferences sharedPreferences;
 
-    public CabinetFragment() {
+    private RecyclerView rvFavAuthors;
+    private RecyclerView rvFavGenres;
 
-    }
+    private boolean isLoggedIn = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,19 +74,29 @@ public class CabinetFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        initButtons();
-        tryClientLogin();
-    }
-
-    @Override
     public View onCreateView(
             LayoutInflater inflater,
             ViewGroup container,
             Bundle savedInstanceState
     ) {
         return inflater.inflate(R.layout.fragment_cabinet, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        tryAutoLogin();
+        initButtons();
+        this.rvFavAuthors = view.findViewById(R.id.rvFavAuthors);
+        this.rvFavAuthors.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        this.rvFavGenres = view.findViewById(R.id.rvFavGenres);
+        this.rvFavGenres.setLayoutManager(new LinearLayoutManager(view.getContext()));
+    }
+
+    private void initButtons() {
+        mainActivity.findViewById(R.id.bLogin).setOnClickListener(this::onLoginButtonClicked);
+        mainActivity.findViewById(R.id.bLogon).setOnClickListener(this::onLogonButtonClicked);
+        mainActivity.findViewById(R.id.bLogout).setOnClickListener(this::onLogoutButtonClicked);
     }
 
     private void saveLoginData(String login, String password) {
@@ -94,36 +113,97 @@ public class CabinetFragment extends Fragment {
         editor.apply();
     }
 
-    private void unsafelyClientLogin() {
+    private void clientOnLoggedIn() {
+        isLoggedIn = true;
         mainActivity.findViewById(R.id.layoutCabinetAnon).setVisibility(View.GONE);
         mainActivity.findViewById(R.id.layoutCabinetDeanon).setVisibility(View.VISIBLE);
     }
 
-    private void tryClientLogin() {
-        String login = sharedPreferences.getString(MainActivity.LOGIN_PREF, "");
-        String password = sharedPreferences.getString(MainActivity.PASSWORD_PREF, "");
-
-        if (login == null || password == null || login.isEmpty() || password.isEmpty()) {
-            return;
-        }
-
-        unsafelyClientLogin();
+    private void onLoggedIn(String login) {
+        clientOnLoggedIn();
+        askServerToFillFavoriteAuthors(login);
+        askServerToFillFavoriteGenres(login);
     }
 
-    private void clientLogout() {
+    private void onLoggedOut() {
+        isLoggedIn = false;
         mainActivity.findViewById(R.id.layoutCabinetAnon).setVisibility(View.VISIBLE);
         mainActivity.findViewById(R.id.layoutCabinetDeanon).setVisibility(View.GONE);
         eraseLoginData();
     }
 
-    private void initButtons() {
-        mainActivity.findViewById(R.id.bLogin).setOnClickListener(this::onLoginButtonClicked);
-        mainActivity.findViewById(R.id.bLogon).setOnClickListener(this::onLogonButtonClicked);
-        mainActivity.findViewById(R.id.bLogout).setOnClickListener(this::onLogoutButtonClicked);
+    private UserEntity tryClientAutoLogin() {
+        String login = sharedPreferences.getString(MainActivity.LOGIN_PREF, "");
+        String password = sharedPreferences.getString(MainActivity.PASSWORD_PREF, "");
+
+        if (login == null || password == null || login.isEmpty() || password.isEmpty()) {
+            return null;
+        }
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setLogin(login);
+        userEntity.setPassword(password);
+        return userEntity;
+    }
+
+    private void tryAutoLogin() {
+        UserEntity userEntity = tryClientAutoLogin();
+        if (userEntity == null) {
+            return;
+        }
+        tryToServerLogin(userEntity);
+    }
+
+    private void askServerToFillFavoriteAuthors(String login) {
+        userApi.getFavAuthors(login).enqueue(new Callback<Set<AuthorEntity>>() {
+            @Override
+            public void onResponse(
+                    @NotNull Call<Set<AuthorEntity>> call,
+                    @NotNull Response<Set<AuthorEntity>> response
+            ) {
+                fillFavAuthors(response.body());
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<Set<AuthorEntity>> call, @NotNull Throwable t) {
+                Toast.makeText(mainActivity,
+                        "Unable to get favorite authors.",
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+        });
+    }
+
+    private void fillFavAuthors(Set<AuthorEntity> favAuthors) {
+        rvFavAuthors.setAdapter(new AuthorAdapter(new ArrayList<>(favAuthors)));
+    }
+
+    private void askServerToFillFavoriteGenres(String login) {
+        userApi.getFavGenres(login).enqueue(new Callback<Set<GenreEntity>>() {
+            @Override
+            public void onResponse(
+                    @NotNull Call<Set<GenreEntity>> call,
+                    @NotNull Response<Set<GenreEntity>> response
+            ) {
+                fillFavGenres(response.body());
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<Set<GenreEntity>> call, @NotNull Throwable t) {
+                Toast.makeText(mainActivity,
+                        "Unable to get favorite genres.",
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+        });
+    }
+
+    private void fillFavGenres(Set<GenreEntity> favGenres) {
+        rvFavGenres.setAdapter(new GenreAdapter(new ArrayList<>(favGenres)));
     }
 
     private void onLogoutButtonClicked(View view) {
-        clientLogout();
+        onLoggedOut();
     }
 
     private void onLoginButtonClicked(View view) {
@@ -142,30 +222,7 @@ public class CabinetFragment extends Fragment {
         UserEntity userEntity = new UserEntity();
         userEntity.setLogin(login);
         userEntity.setPassword(password);
-        userApi.tryLogin(userEntity).enqueue(new Callback<Boolean>() {
-            @Override
-            public void onResponse(@NotNull Call<Boolean> call, @NotNull Response<Boolean> response) {
-                if (!response.body()) {
-                    Toast.makeText(
-                            mainActivity,
-                            "Wrong login or password.",
-                            Toast.LENGTH_SHORT
-                    ).show();
-                    return;
-                }
-                saveLoginData(login, password);
-                unsafelyClientLogin();
-                Toast.makeText(mainActivity, "Logged in successfully.", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(@NotNull Call<Boolean> call, @NotNull Throwable t) {
-                Toast.makeText(mainActivity, "Login failed.", Toast.LENGTH_SHORT).show();
-                Logger.getLogger(mainActivity.getClass().getName()).log(
-                        Level.SEVERE, "Login failed.", t
-                );
-            }
-        });
+        tryToServerLogin(userEntity);
     }
 
     private void onLogonButtonClicked(View view) {
@@ -184,6 +241,37 @@ public class CabinetFragment extends Fragment {
         UserEntity userEntity = new UserEntity();
         userEntity.setLogin(login);
         userEntity.setPassword(password);
+        tryToServerLogon(userEntity);
+    }
+
+    private void tryToServerLogin(UserEntity userEntity) {
+        userApi.tryLogin(userEntity).enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(@NotNull Call<Boolean> call, @NotNull Response<Boolean> response) {
+                if (!response.body()) {
+                    Toast.makeText(
+                            mainActivity,
+                            "Wrong login or password.",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    return;
+                }
+                saveLoginData(userEntity.getLogin(), userEntity.getPassword());
+                onLoggedIn(userEntity.getLogin());
+                isLoggedIn = true;
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<Boolean> call, @NotNull Throwable t) {
+                Toast.makeText(mainActivity, "Login failed.", Toast.LENGTH_SHORT).show();
+                Logger.getLogger(mainActivity.getClass().getName()).log(
+                        Level.SEVERE, "Login failed.", t
+                );
+            }
+        });
+    }
+
+    private void tryToServerLogon(UserEntity userEntity) {
         userApi.tryLogon(userEntity).enqueue(new Callback<Boolean>() {
             @Override
             public void onResponse(@NotNull Call<Boolean> call, @NotNull Response<Boolean> response) {
@@ -195,13 +283,8 @@ public class CabinetFragment extends Fragment {
                     ).show();
                     return;
                 }
-                Toast.makeText(
-                        mainActivity,
-                        "Logged on successfully.",
-                        Toast.LENGTH_SHORT
-                ).show();
-                saveLoginData(login, password);
-                unsafelyClientLogin();
+                saveLoginData(userEntity.getLogin(), userEntity.getPassword());
+                onLoggedIn(userEntity.getLogin());
             }
 
             @Override

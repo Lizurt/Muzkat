@@ -5,4 +5,6 @@
     <string name="title_notifications">Notifications</string>
     <string name="cab_frag_name">Cabinet</string>
     <string name="mus_frag_name">Music</string>
+    <string name="placeholder">PLACEHOLDER</string>
+    <string name="del">DEL</string>
 </resources>
