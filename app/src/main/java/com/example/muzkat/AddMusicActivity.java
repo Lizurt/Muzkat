@@ -59,6 +59,12 @@ public class AddMusicActivity extends AppCompatActivity {
         musicApi.saveMusic(addMusicRequest).enqueue(new Callback<Boolean>() {
             @Override
             public void onResponse(@NotNull Call<Boolean> call, @NotNull Response<Boolean> response) {
+                if (response.body() == null) {
+                    Toast.makeText(AddMusicActivity.this,
+                            "Unknown error during saving music.",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 String feedback;
                 if (response.body()) {
                     feedback = "Successfully added the music to a music list.";

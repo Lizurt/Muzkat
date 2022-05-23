@@ -271,6 +271,12 @@ public class CabinetFragment extends Fragment {
         userApi.tryLogin(userEntity).enqueue(new Callback<Boolean>() {
             @Override
             public void onResponse(@NotNull Call<Boolean> call, @NotNull Response<Boolean> response) {
+                if (response.body() == null) {
+                    Toast.makeText(mainActivity,
+                            "Unknown error during logging in.",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 if (!response.body()) {
                     Toast.makeText(
                             mainActivity,
@@ -297,6 +303,12 @@ public class CabinetFragment extends Fragment {
         userApi.tryLogon(userEntity).enqueue(new Callback<Boolean>() {
             @Override
             public void onResponse(@NotNull Call<Boolean> call, @NotNull Response<Boolean> response) {
+                if (response.body() == null) {
+                    Toast.makeText(mainActivity,
+                            "Unknown error during logging on.",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 if (!response.body()) {
                     Toast.makeText(
                             mainActivity,
