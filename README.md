@@ -34,7 +34,7 @@ https://muzkat-server.herokuapp.com
 ### APK
 You need Android 6.0+ to run this app.
 
-https://github.com/Lizurt/Muzkat/blob/main/docs/app-release-unsigned.apk
+https://github.com/Lizurt/Muzkat/blob/main/docs/app-release.apk
 
 ### Server repository
 https://github.com/Lizurt/MuzkatServer/tree/main
