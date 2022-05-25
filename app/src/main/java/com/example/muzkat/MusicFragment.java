@@ -16,12 +16,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.muzkat.model.request.CountInMetricRequest;
 import com.example.muzkat.recycler.MusicAdapter;
 import com.example.muzkat.model.entity.MusicEntity;
 import com.example.muzkat.model.request.GetMatchingMusicRequest;
 import com.example.muzkat.retrofit.RetrofitService;
 import com.example.muzkat.retrofit.api.AuthorApi;
 import com.example.muzkat.retrofit.api.GenreApi;
+import com.example.muzkat.retrofit.api.MetricApi;
 import com.example.muzkat.retrofit.api.MusicApi;
 import com.example.muzkat.retrofit.api.UserApi;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -40,6 +42,7 @@ public class MusicFragment extends Fragment {
     private AuthorApi authorApi;
     private UserApi userApi;
     private MusicApi musicApi;
+    private MetricApi metricApi;
 
     private MainActivity mainActivity;
 
@@ -65,6 +68,7 @@ public class MusicFragment extends Fragment {
         this.authorApi = retrofitService.getRetrofit().create(AuthorApi.class);
         this.userApi = retrofitService.getRetrofit().create(UserApi.class);
         this.musicApi = retrofitService.getRetrofit().create(MusicApi.class);
+        this.metricApi = retrofitService.getRetrofit().create(MetricApi.class);
         this.mainActivity = mainActivity;
     }
 
@@ -95,6 +99,7 @@ public class MusicFragment extends Fragment {
             askServerToFillMusicListSmartly();
             fabAddMusic.setOnClickListener(v -> {
                 Intent intentGoToAddNewMusic = new Intent(mainActivity, AddMusicActivity.class);
+                intentGoToAddNewMusic.putExtra(CabinetFragment.EXTRA_LOGIN, login);
                 startActivity(intentGoToAddNewMusic);
             });
         }

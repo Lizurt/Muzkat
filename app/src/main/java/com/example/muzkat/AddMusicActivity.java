@@ -7,7 +7,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.muzkat.model.request.AddMusicRequest;
+import com.example.muzkat.model.request.CountInMetricRequest;
 import com.example.muzkat.retrofit.RetrofitService;
+import com.example.muzkat.retrofit.api.MetricApi;
 import com.example.muzkat.retrofit.api.MusicApi;
 
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +23,7 @@ public class AddMusicActivity extends AppCompatActivity {
     private EditText etAuthor;
     private EditText etGenre;
     private MusicApi musicApi;
+    private MetricApi metricApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +38,7 @@ public class AddMusicActivity extends AppCompatActivity {
         etGenre = findViewById(R.id.etGenre);
         RetrofitService retrofitService = new RetrofitService();
         musicApi = retrofitService.getRetrofit().create(MusicApi.class);
+        metricApi = retrofitService.getRetrofit().create(MetricApi.class);
         findViewById(R.id.bAddMusic).setOnClickListener(v -> askServerToAddMusic());
     }
 
@@ -52,6 +56,21 @@ public class AddMusicActivity extends AppCompatActivity {
             return;
         }
 
+        CountInMetricRequest countInMetricRequest = new CountInMetricRequest();
+        countInMetricRequest.setLogin(getIntent().getStringExtra(CabinetFragment.EXTRA_LOGIN));
+        countInMetricRequest.setMetricName(Metrics.ADDED_MUSIC);
+        metricApi.countUser(countInMetricRequest).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NotNull Call<Void> call, @NotNull Response<Void> response) {
+
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<Void> call, @NotNull Throwable t) {
+
+            }
+        });
+
         AddMusicRequest addMusicRequest = new AddMusicRequest();
         addMusicRequest.setMusicName(musicName);
         addMusicRequest.setAuthorName(authorName);
@@ -59,6 +78,12 @@ public class AddMusicActivity extends AppCompatActivity {
         musicApi.saveMusic(addMusicRequest).enqueue(new Callback<Boolean>() {
             @Override
             public void onResponse(@NotNull Call<Boolean> call, @NotNull Response<Boolean> response) {
+                if (response.body() == null) {
+                    Toast.makeText(AddMusicActivity.this,
+                            "Unknown error during saving music.",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 String feedback;
                 if (response.body()) {
                     feedback = "Successfully added the music to a music list.";
