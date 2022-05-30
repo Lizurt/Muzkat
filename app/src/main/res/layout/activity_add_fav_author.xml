@@ -34,7 +34,7 @@
         android:layout_height="wrap_content" />
 
     <ProgressBar
-        android:id="@+id/pbLoading"
+        android:id="@+id/pbLoadingAddAuthor"
         android:visibility="gone"
         android:indeterminate="true"
         android:padding="16dp"

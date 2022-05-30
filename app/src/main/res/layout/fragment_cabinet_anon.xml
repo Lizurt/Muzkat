@@ -19,54 +19,42 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvLogin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif"
-                android:text="Login"
-                android:textAlignment="center"
-                android:textSize="30sp" />
-
             <EditText
+                android:hint="@string/login"
                 android:id="@+id/etLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textPersonName" />
-
-            <TextView
-                android:id="@+id/tvPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Password"
-                android:textAlignment="center"
-                android:textSize="30sp" />
+                android:inputType="textPersonName"
+                android:importantForAutofill="no" />
 
             <EditText
+                android:hint="@string/password"
                 android:id="@+id/etPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:importantForAutofill="no" />
 
-            <TextView
-                android:id="@+id/tvLoginError"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#7F0000" />
+            <ProgressBar
+                android:visibility="gone"
+                android:id="@+id/pbLoadingAuth"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
             <Button
                 android:id="@+id/bLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Login" />
+                android:text="@string/login" />
 
             <Button
                 android:id="@+id/bLogon"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Logon" />
+                android:text="@string/logon" />
 
         </LinearLayout>
     </ScrollView>

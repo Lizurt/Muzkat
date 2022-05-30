@@ -31,7 +31,7 @@
                 android:contentDescription="@string/del" />
             <ProgressBar
                 android:visibility="gone"
-                android:id="@+id/pbLoading"
+                android:id="@+id/pbLoadingRemAuthor"
                 app:layout_constraintStart_toStartOf="@id/bRemoveAuthor"
                 app:layout_constraintTop_toTopOf="@id/bRemoveAuthor"
                 android:indeterminate="true"

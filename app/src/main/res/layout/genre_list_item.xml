@@ -34,7 +34,7 @@
 
             <ProgressBar
                 android:visibility="gone"
-                android:id="@+id/pbLoading"
+                android:id="@+id/pbLoadingRemGenre"
                 app:layout_constraintStart_toStartOf="@id/bRemoveGenre"
                 app:layout_constraintTop_toTopOf="@id/bRemoveGenre"
                 android:indeterminate="true"

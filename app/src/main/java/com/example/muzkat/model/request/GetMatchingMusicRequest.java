@@ -2,7 +2,16 @@ package com.example.muzkat.model.request;
 
 public class GetMatchingMusicRequest {
     private Integer amount;
+    private Integer page;
     private String login;
+
+    public Integer getPage() {
+        return page;
+    }
+
+    public void setPage(Integer page) {
+        this.page = page;
+    }
 
     public Integer getAmount() {
         return amount;
