@@ -67,8 +67,18 @@
         android:id="@+id/bAddMusic"
         app:layout_constraintTop_toBottomOf="@id/etGenre"
         app:layout_constraintStart_toStartOf="@id/etGenre"
-        android:text="Add music"
+        android:text="@string/add_music"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ProgressBar
+        android:id="@+id/pbLoadingAddMusic"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/etGenre"
+        app:layout_constraintTop_toBottomOf="@id/etGenre"
+        app:layout_constraintEnd_toEndOf="@id/etGenre"
+        android:indeterminate="true"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

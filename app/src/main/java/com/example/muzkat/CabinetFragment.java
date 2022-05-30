@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,7 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.muzkat.model.entity.AuthorEntity;
@@ -55,7 +58,14 @@ public class CabinetFragment extends Fragment {
     private RecyclerView rvFavAuthors;
     private RecyclerView rvFavGenres;
 
+    private ProgressBar pbLoading;
+    private Button bLogin;
+    private Button bLogon;
+
     private String login;
+
+    private ConstraintLayout csAnon;
+    private ConstraintLayout csDeanon;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,17 +98,27 @@ public class CabinetFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        tryAutoLogin();
+
+        csAnon = mainActivity.findViewById(R.id.layoutCabinetAnon);
+        csDeanon = mainActivity.findViewById(R.id.layoutCabinetDeanon);
+
+        pbLoading = mainActivity.findViewById(R.id.pbLoadingAuth);
         initButtons();
         this.rvFavAuthors = view.findViewById(R.id.rvFavAuthors);
         this.rvFavAuthors.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        rvFavAuthors.setAdapter(null);
         this.rvFavGenres = view.findViewById(R.id.rvFavGenres);
         this.rvFavGenres.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        rvFavGenres.setAdapter(null);
+
+        tryAutoLogin();
     }
 
     private void initButtons() {
-        mainActivity.findViewById(R.id.bLogin).setOnClickListener(this::onLoginButtonClicked);
-        mainActivity.findViewById(R.id.bLogon).setOnClickListener(this::onLogonButtonClicked);
+        bLogin = mainActivity.findViewById(R.id.bLogin);
+        bLogin.setOnClickListener(this::onLoginButtonClicked);
+        bLogon = mainActivity.findViewById(R.id.bLogon);
+        bLogon.setOnClickListener(this::onLogonButtonClicked);
 
         mainActivity.findViewById(R.id.bLogout).setOnClickListener(this::onLogoutButtonClicked);
         mainActivity.findViewById(R.id.bAddFavoriteAuthor).setOnClickListener(
@@ -137,8 +157,8 @@ public class CabinetFragment extends Fragment {
     }
 
     private void clientOnLoggedIn() {
-        mainActivity.findViewById(R.id.layoutCabinetAnon).setVisibility(View.GONE);
-        mainActivity.findViewById(R.id.layoutCabinetDeanon).setVisibility(View.VISIBLE);
+        csAnon.setVisibility(View.GONE);
+        csDeanon.setVisibility(View.VISIBLE);
     }
 
     private void onLoggedIn(String login) {
@@ -150,8 +170,8 @@ public class CabinetFragment extends Fragment {
 
     private void onLoggedOut() {
         login = null;
-        mainActivity.findViewById(R.id.layoutCabinetAnon).setVisibility(View.VISIBLE);
-        mainActivity.findViewById(R.id.layoutCabinetDeanon).setVisibility(View.GONE);
+        csAnon.setVisibility(View.VISIBLE);
+        csDeanon.setVisibility(View.GONE);
         eraseLoginData();
     }
 
@@ -268,9 +288,11 @@ public class CabinetFragment extends Fragment {
     }
 
     private void tryToServerLogin(UserEntity userEntity) {
+        onAuthProcessStarted();
         userApi.tryLogin(userEntity).enqueue(new Callback<Boolean>() {
             @Override
             public void onResponse(@NotNull Call<Boolean> call, @NotNull Response<Boolean> response) {
+                onAuthProcessFinished();
                 if (response.body() == null) {
                     Toast.makeText(mainActivity,
                             "Unknown error during logging in.",
@@ -291,21 +313,28 @@ public class CabinetFragment extends Fragment {
 
             @Override
             public void onFailure(@NotNull Call<Boolean> call, @NotNull Throwable t) {
-                Toast.makeText(mainActivity, "Login failed.", Toast.LENGTH_SHORT).show();
+                onAuthProcessFinished();
+                Toast.makeText(
+                        mainActivity,
+                        "Server is not responding. Try again later.",
+                        Toast.LENGTH_SHORT
+                ).show();
                 Logger.getLogger(mainActivity.getClass().getName()).log(
-                        Level.SEVERE, "Login failed.", t
+                        Level.SEVERE, "Server is not .", t
                 );
             }
         });
     }
 
     private void tryToServerLogon(UserEntity userEntity) {
+        onAuthProcessStarted();
         userApi.tryLogon(userEntity).enqueue(new Callback<Boolean>() {
             @Override
             public void onResponse(@NotNull Call<Boolean> call, @NotNull Response<Boolean> response) {
+                onAuthProcessFinished();
                 if (response.body() == null) {
                     Toast.makeText(mainActivity,
-                            "Unknown error during logging on.",
+                            "Unknown error during logging on. Try again later.",
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -323,11 +352,25 @@ public class CabinetFragment extends Fragment {
 
             @Override
             public void onFailure(@NotNull Call<Boolean> call, @NotNull Throwable t) {
-                Toast.makeText(mainActivity, "Logon failed.", Toast.LENGTH_SHORT).show();
-                Logger.getLogger(mainActivity.getClass().getName()).log(
-                        Level.SEVERE, "Logon failed.", t
-                );
+                onAuthProcessFinished();
+                Toast.makeText(
+                        mainActivity,
+                        "Server is not responding. Try again later.",
+                        Toast.LENGTH_SHORT
+                ).show();
             }
         });
+    }
+
+    private void onAuthProcessStarted() {
+        pbLoading.setVisibility(View.VISIBLE);
+        bLogin.setVisibility(View.GONE);
+        bLogon.setVisibility(View.GONE);
+    }
+
+    private void onAuthProcessFinished() {
+        pbLoading.setVisibility(View.GONE);
+        bLogin.setVisibility(View.VISIBLE);
+        bLogon.setVisibility(View.VISIBLE);
     }
 }

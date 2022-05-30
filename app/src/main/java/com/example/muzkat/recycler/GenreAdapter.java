@@ -46,7 +46,7 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreHolder> {
             deleteFavGenreRequest.setLogin(login);
             deleteFavGenreRequest.setGenreName(result.getTvGenreName().getText().toString());
             view.findViewById(R.id.bRemoveGenre).setVisibility(View.GONE);
-            view.findViewById(R.id.pbLoading).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.pbLoadingRemGenre).setVisibility(View.VISIBLE);
             userApi.delFavGenre(deleteFavGenreRequest).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(@NotNull Call<Void> call, @NotNull Response<Void> response) {
@@ -59,7 +59,7 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreHolder> {
                 @Override
                 public void onFailure(@NotNull Call<Void> call, @NotNull Throwable t) {
                     view.findViewById(R.id.bRemoveGenre).setVisibility(View.VISIBLE);
-                    view.findViewById(R.id.pbLoading).setVisibility(View.GONE);
+                    view.findViewById(R.id.pbLoadingRemGenre).setVisibility(View.GONE);
                     Toast.makeText(
                             view.getContext(),
                             "Failed to remove the genre from favorites.",

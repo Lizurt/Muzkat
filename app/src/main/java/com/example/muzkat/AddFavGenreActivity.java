@@ -47,17 +47,17 @@ public class AddFavGenreActivity extends AppCompatActivity {
         AddFavGenreRequest addFavGenreRequest = new AddFavGenreRequest();
         addFavGenreRequest.setGenreName(genreName);
         addFavGenreRequest.setLogin(getIntent().getStringExtra(CabinetFragment.EXTRA_LOGIN));
-        findViewById(R.id.pbLoading).setVisibility(View.VISIBLE);
+        findViewById(R.id.pbLoadingAddGenre).setVisibility(View.VISIBLE);
         userApi.addFavGenre(addFavGenreRequest).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(@NotNull Call<Void> call, @NotNull Response<Void> response) {
-                findViewById(R.id.pbLoading).setVisibility(View.GONE);
+                findViewById(R.id.pbLoadingAddGenre).setVisibility(View.GONE);
                 finish();
             }
 
             @Override
             public void onFailure(@NotNull Call<Void> call, @NotNull Throwable t) {
-                findViewById(R.id.pbLoading).setVisibility(View.GONE);
+                findViewById(R.id.pbLoadingAddGenre).setVisibility(View.GONE);
                 Toast.makeText(
                         AddFavGenreActivity.this,
                         "Failed to add a genre to favorites.",

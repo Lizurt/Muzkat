@@ -3,7 +3,10 @@ package com.example.muzkat;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.muzkat.model.request.AddMusicRequest;
@@ -25,6 +28,9 @@ public class AddMusicActivity extends AppCompatActivity {
     private MusicApi musicApi;
     private MetricApi metricApi;
 
+    private Button bAddMusic;
+    private ProgressBar pbLoading;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,13 +39,16 @@ public class AddMusicActivity extends AppCompatActivity {
     }
 
     private void initComponents() {
+        pbLoading = findViewById(R.id.pbLoadingAddMusic);
+        bAddMusic = findViewById(R.id.bAddMusic);
         etMusic = findViewById(R.id.etMusic);
         etAuthor = findViewById(R.id.etAuthor);
         etGenre = findViewById(R.id.etGenre);
         RetrofitService retrofitService = new RetrofitService();
         musicApi = retrofitService.getRetrofit().create(MusicApi.class);
         metricApi = retrofitService.getRetrofit().create(MetricApi.class);
-        findViewById(R.id.bAddMusic).setOnClickListener(v -> askServerToAddMusic());
+
+       bAddMusic.setOnClickListener(v -> askServerToAddMusic());
     }
 
     private void askServerToAddMusic() {
@@ -75,9 +84,11 @@ public class AddMusicActivity extends AppCompatActivity {
         addMusicRequest.setMusicName(musicName);
         addMusicRequest.setAuthorName(authorName);
         addMusicRequest.setGenreName(genreName);
+        onAddRequestSent();
         musicApi.saveMusic(addMusicRequest).enqueue(new Callback<Boolean>() {
             @Override
             public void onResponse(@NotNull Call<Boolean> call, @NotNull Response<Boolean> response) {
+                onAddRequestFinished();
                 if (response.body() == null) {
                     Toast.makeText(AddMusicActivity.this,
                             "Unknown error during saving music.",
@@ -100,6 +111,7 @@ public class AddMusicActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NotNull Call<Boolean> call, @NotNull Throwable t) {
+                onAddRequestFinished();
                 Toast.makeText(
                         AddMusicActivity.this,
                         "Failed to add the music to the music list - the server isn't responding. ",
@@ -107,5 +119,15 @@ public class AddMusicActivity extends AppCompatActivity {
                 ).show();
             }
         });
+    }
+
+    private void onAddRequestSent() {
+        pbLoading.setVisibility(View.VISIBLE);
+        bAddMusic.setVisibility(View.GONE);
+    }
+
+    private void onAddRequestFinished() {
+        pbLoading.setVisibility(View.GONE);
+        bAddMusic.setVisibility(View.VISIBLE);
     }
 }

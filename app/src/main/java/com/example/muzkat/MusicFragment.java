@@ -14,9 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.muzkat.model.request.CountInMetricRequest;
 import com.example.muzkat.recycler.MusicAdapter;
 import com.example.muzkat.model.entity.MusicEntity;
 import com.example.muzkat.model.request.GetMatchingMusicRequest;
@@ -49,7 +50,16 @@ public class MusicFragment extends Fragment {
     private RecyclerView rvMusicList;
     private FloatingActionButton fabAddMusic;
 
-    SharedPreferences sharedPreferences;
+    private Button bUpdate;
+    private Button bPrev;
+    private Button bNext;
+
+    private ProgressBar pbLoading;
+
+    private SharedPreferences sharedPreferences;
+
+    private int currPage = 0;
+    public static final int AMT_PER_PAGE = 4;
 
     public MusicFragment() {
 
@@ -85,17 +95,25 @@ public class MusicFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.rvMusicList = mainActivity.findViewById(R.id.rvMusicList);
+        rvMusicList.setAdapter(null);
         rvMusicList.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        pbLoading = mainActivity.findViewById(R.id.pbLoadingMusic);
+        initButtons();
 
         sharedPreferences = mainActivity.getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE);
-
-        fabAddMusic = mainActivity.findViewById(R.id.fabAddMusic);
         String login = sharedPreferences.getString(MainActivity.LOGIN_PREF, "");
         String password = sharedPreferences.getString(MainActivity.PASSWORD_PREF, "");
         if (login.isEmpty() || password.isEmpty()) {
             askServerToFillMusicListRandomly();
             fabAddMusic.setVisibility(View.GONE);
+            bUpdate.setVisibility(View.VISIBLE);
+            bPrev.setVisibility(View.GONE);
+            bNext.setVisibility(View.GONE);
         } else {
+            fabAddMusic.setVisibility(View.VISIBLE);
+            bUpdate.setVisibility(View.GONE);
+            bPrev.setVisibility(View.VISIBLE);
+            bNext.setVisibility(View.VISIBLE);
             askServerToFillMusicListSmartly();
             fabAddMusic.setOnClickListener(v -> {
                 Intent intentGoToAddNewMusic = new Intent(mainActivity, AddMusicActivity.class);
@@ -105,6 +123,24 @@ public class MusicFragment extends Fragment {
         }
     }
 
+    private void initButtons() {
+        fabAddMusic = mainActivity.findViewById(R.id.fabAddMusic);
+        bUpdate = mainActivity.findViewById(R.id.bUpdate);
+        bUpdate.setOnClickListener(v -> {
+            askServerToFillMusicListRandomly();
+        });
+        bPrev = mainActivity.findViewById(R.id.bPrev);
+        bPrev.setOnClickListener(v -> {
+            currPage = Math.max(0, currPage - 1);
+            askServerToFillMusicListSmartly();
+        });
+        bNext = mainActivity.findViewById(R.id.bNext);
+        bNext.setOnClickListener(v -> {
+            currPage = Math.max(0, currPage + 1);
+            askServerToFillMusicListSmartly();
+        });
+    }
+
     private void askServerToFillMusicListSmartly() {
         String login = sharedPreferences.getString(MainActivity.LOGIN_PREF, "");
         if (login.isEmpty()) {
@@ -112,36 +148,57 @@ public class MusicFragment extends Fragment {
         }
         GetMatchingMusicRequest getMatchingMusicRequest = new GetMatchingMusicRequest();
         getMatchingMusicRequest.setLogin(login);
-        getMatchingMusicRequest.setAmount(8);
+        getMatchingMusicRequest.setAmount(AMT_PER_PAGE);
+        getMatchingMusicRequest.setPage(currPage);
+        onUpdateListStarted();
         musicApi.getMatching(getMatchingMusicRequest).enqueue(new Callback<List<MusicEntity>>() {
             @Override
             public void onResponse(@NotNull Call<List<MusicEntity>> call, @NotNull Response<List<MusicEntity>> response) {
+                onUpdateListFinished();
                 fillMusicList(response.body());
             }
 
             @Override
             public void onFailure(@NotNull Call<List<MusicEntity>> call, @NotNull Throwable t) {
-                Toast.makeText(mainActivity, "Couldn't get any matching music from the server.", Toast.LENGTH_SHORT).show();
+                onUpdateListFinished();
+                Toast.makeText(
+                        mainActivity,
+                        "Server is not responding. Try again later.",
+                        Toast.LENGTH_SHORT
+                ).show();
             }
         });
     }
 
     private void askServerToFillMusicListRandomly() {
-        musicApi.getRandom(4).enqueue(new Callback<List<MusicEntity>>() {
+        onUpdateListStarted();
+        musicApi.getRandom(AMT_PER_PAGE).enqueue(new Callback<List<MusicEntity>>() {
             @Override
             public void onResponse(@NotNull Call<List<MusicEntity>> call, @NotNull Response<List<MusicEntity>> response) {
+                onUpdateListFinished();
                 fillMusicList(response.body());
             }
 
             @Override
             public void onFailure(@NotNull Call<List<MusicEntity>> call, @NotNull Throwable t) {
+                onUpdateListFinished();
                 Toast.makeText(
                         mainActivity,
-                        "Couldn't get any music from the server.",
+                        "Server is not responding. Try again later.",
                         Toast.LENGTH_SHORT
                 ).show();
             }
         });
+    }
+
+    private void onUpdateListStarted() {
+        pbLoading.setVisibility(View.VISIBLE);
+        rvMusicList.setVisibility(View.GONE);
+    }
+
+    private void onUpdateListFinished() {
+        pbLoading.setVisibility(View.GONE);
+        rvMusicList.setVisibility(View.VISIBLE);
     }
 
     private void fillMusicList(List<MusicEntity> musicEntities) {

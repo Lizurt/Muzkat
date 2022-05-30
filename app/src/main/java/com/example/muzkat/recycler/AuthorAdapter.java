@@ -48,7 +48,7 @@ public class AuthorAdapter extends RecyclerView.Adapter<AuthorHolder> {
             deleteFavAuthorRequest.setLogin(login);
             deleteFavAuthorRequest.setAuthorName(result.getTvAuthorName().getText().toString());
             view.findViewById(R.id.bRemoveAuthor).setVisibility(View.GONE);
-            view.findViewById(R.id.pbLoading).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.pbLoadingRemAuthor).setVisibility(View.VISIBLE);
             userApi.delFavAuthor(deleteFavAuthorRequest).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(@NotNull Call<Void> call, @NotNull Response<Void> response) {
@@ -61,7 +61,7 @@ public class AuthorAdapter extends RecyclerView.Adapter<AuthorHolder> {
                 @Override
                 public void onFailure(@NotNull Call<Void> call, @NotNull Throwable t) {
                     view.findViewById(R.id.bRemoveAuthor).setVisibility(View.VISIBLE);
-                    view.findViewById(R.id.pbLoading).setVisibility(View.GONE);
+                    view.findViewById(R.id.pbLoadingRemAuthor).setVisibility(View.GONE);
                     Toast.makeText(
                             view.getContext(),
                             "Failed to remove the author from favorites.",
