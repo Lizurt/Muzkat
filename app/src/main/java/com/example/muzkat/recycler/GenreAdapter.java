@@ -32,6 +32,12 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreHolder> {
         this.login = login;
     }
 
+    /**
+     * Automatically being called when a view holder is being created
+     * @param parent
+     * @param viewType
+     * @return
+     */
     @NonNull
     @Override
     public GenreHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -71,12 +77,21 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreHolder> {
         return result;
     }
 
+    /**
+     * Automatically being called when a view holder is being binded
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(@NonNull GenreHolder holder, int position) {
         GenreEntity genreEntity = genres.get(position);
         holder.getTvGenreName().setText(genreEntity.getName());
     }
 
+    /**
+     * Gets amount of list items
+     * @return
+     */
     @Override
     public int getItemCount() {
         return genres.size();

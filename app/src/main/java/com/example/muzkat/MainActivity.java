@@ -23,8 +23,17 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
+    /**
+     * The name of shared preferences
+     */
     public final static String PREFS_NAME = "MuzkatPreferences";
+    /**
+     * The name of login key in the shared preferences
+     */
     public final static String LOGIN_PREF = "Login";
+    /**
+     * The name of password key in the shared preferences
+     */
     public final static String PASSWORD_PREF = "Password";
 
     @Override

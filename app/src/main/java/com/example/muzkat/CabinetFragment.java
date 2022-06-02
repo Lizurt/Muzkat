@@ -42,6 +42,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Handles almost all the cabinet interface logic
+ */
 public class CabinetFragment extends Fragment {
     public final static String EXTRA_LOGIN = "LOGIN";
 
@@ -67,6 +70,10 @@ public class CabinetFragment extends Fragment {
     private ConstraintLayout csAnon;
     private ConstraintLayout csDeanon;
 
+    /**
+     * Is automatically being called when the fragment is being created
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +93,13 @@ public class CabinetFragment extends Fragment {
         );
     }
 
+    /**
+     * Is automatically being called when the fragment view is being created
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(
             LayoutInflater inflater,
@@ -95,6 +109,11 @@ public class CabinetFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_cabinet, container, false);
     }
 
+    /**
+     * Is automatically being called when the fragment view is created
+     * @param view
+     * @param savedInstanceState
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
