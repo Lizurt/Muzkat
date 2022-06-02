@@ -19,6 +19,12 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicHolder> {
         this.musics = musics;
     }
 
+    /**
+     * Automatically being called when a view holder is being created
+     * @param parent
+     * @param viewType
+     * @return
+     */
     @NonNull
     @Override
     public MusicHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -30,6 +36,11 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicHolder> {
         return new MusicHolder(view);
     }
 
+    /**
+     * Automatically being called when a view holder is being binded
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(@NonNull MusicHolder holder, int position) {
         MusicEntity musicEntity = musics.get(position);
@@ -38,6 +49,10 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicHolder> {
         holder.getTvGenreName().setText(musicEntity.getGenre().getName());
     }
 
+    /**
+     * Gets amount of list items
+     * @return
+     */
     @Override
     public int getItemCount() {
         return musics.size();

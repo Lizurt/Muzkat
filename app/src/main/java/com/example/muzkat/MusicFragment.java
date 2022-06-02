@@ -65,6 +65,10 @@ public class MusicFragment extends Fragment {
 
     }
 
+    /**
+     * Is automatically being called when the fragment is being created
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +86,13 @@ public class MusicFragment extends Fragment {
         this.mainActivity = mainActivity;
     }
 
+    /**
+     * Is automatically being called when the fragment view is being created
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(
             @NotNull LayoutInflater inflater,
@@ -91,6 +102,11 @@ public class MusicFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_music, container, false);
     }
 
+    /**
+     * Is automatically being called when the fragment is created
+     * @param view
+     * @param savedInstanceState
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

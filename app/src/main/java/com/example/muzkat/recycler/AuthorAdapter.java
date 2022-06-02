@@ -34,6 +34,12 @@ public class AuthorAdapter extends RecyclerView.Adapter<AuthorHolder> {
         this.login = login;
     }
 
+    /**
+     * Automatically being called when a view holder is being created
+     * @param parent
+     * @param viewType
+     * @return
+     */
     @NonNull
     @Override
     public AuthorHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -73,12 +79,21 @@ public class AuthorAdapter extends RecyclerView.Adapter<AuthorHolder> {
         return result;
     }
 
+    /**
+     * Automatically being called when a view holder is being binded
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(@NonNull AuthorHolder holder, int position) {
         AuthorEntity authorEntity = authors.get(position);
         holder.getTvAuthorName().setText(authorEntity.getName());
     }
 
+    /**
+     * Gets amount of list items
+     * @return
+     */
     @Override
     public int getItemCount() {
         return authors.size();
