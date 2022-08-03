@@ -24,10 +24,10 @@ import com.example.muzkat.model.request.GetMatchingMusicRequest;
 import com.example.muzkat.retrofit.RetrofitService;
 import com.example.muzkat.retrofit.api.AuthorApi;
 import com.example.muzkat.retrofit.api.GenreApi;
-import com.example.muzkat.retrofit.api.MetricApi;
 import com.example.muzkat.retrofit.api.MusicApi;
 import com.example.muzkat.retrofit.api.UserApi;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.yandex.metrica.YandexMetrica;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -43,7 +43,6 @@ public class MusicFragment extends Fragment {
     private AuthorApi authorApi;
     private UserApi userApi;
     private MusicApi musicApi;
-    private MetricApi metricApi;
 
     private MainActivity mainActivity;
 
@@ -65,10 +64,6 @@ public class MusicFragment extends Fragment {
 
     }
 
-    /**
-     * Is automatically being called when the fragment is being created
-     * @param savedInstanceState
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,17 +77,9 @@ public class MusicFragment extends Fragment {
         this.authorApi = retrofitService.getRetrofit().create(AuthorApi.class);
         this.userApi = retrofitService.getRetrofit().create(UserApi.class);
         this.musicApi = retrofitService.getRetrofit().create(MusicApi.class);
-        this.metricApi = retrofitService.getRetrofit().create(MetricApi.class);
         this.mainActivity = mainActivity;
     }
 
-    /**
-     * Is automatically being called when the fragment view is being created
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return
-     */
     @Override
     public View onCreateView(
             @NotNull LayoutInflater inflater,
@@ -102,11 +89,6 @@ public class MusicFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_music, container, false);
     }
 
-    /**
-     * Is automatically being called when the fragment is created
-     * @param view
-     * @param savedInstanceState
-     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -136,6 +118,7 @@ public class MusicFragment extends Fragment {
                 intentGoToAddNewMusic.putExtra(CabinetFragment.EXTRA_LOGIN, login);
                 startActivity(intentGoToAddNewMusic);
             });
+            YandexMetrica.reportEvent(MetricEventNames.VISITED_MUSIC_SCREEN);
         }
     }
 

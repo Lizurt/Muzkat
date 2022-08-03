@@ -30,6 +30,7 @@ import com.example.muzkat.retrofit.api.AuthorApi;
 import com.example.muzkat.retrofit.api.GenreApi;
 import com.example.muzkat.retrofit.api.MusicApi;
 import com.example.muzkat.retrofit.api.UserApi;
+import com.yandex.metrica.YandexMetrica;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -42,9 +43,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Handles almost all the cabinet interface logic
- */
 public class CabinetFragment extends Fragment {
     public final static String EXTRA_LOGIN = "LOGIN";
 
@@ -70,10 +68,6 @@ public class CabinetFragment extends Fragment {
     private ConstraintLayout csAnon;
     private ConstraintLayout csDeanon;
 
-    /**
-     * Is automatically being called when the fragment is being created
-     * @param savedInstanceState
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,13 +87,6 @@ public class CabinetFragment extends Fragment {
         );
     }
 
-    /**
-     * Is automatically being called when the fragment view is being created
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return
-     */
     @Override
     public View onCreateView(
             LayoutInflater inflater,
@@ -109,11 +96,6 @@ public class CabinetFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_cabinet, container, false);
     }
 
-    /**
-     * Is automatically being called when the fragment view is created
-     * @param view
-     * @param savedInstanceState
-     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -130,6 +112,7 @@ public class CabinetFragment extends Fragment {
         this.rvFavGenres.setLayoutManager(new LinearLayoutManager(view.getContext()));
         rvFavGenres.setAdapter(null);
 
+        YandexMetrica.reportEvent(MetricEventNames.VISISTED_AUTH_SCREEN);
         tryAutoLogin();
     }
 
@@ -182,6 +165,7 @@ public class CabinetFragment extends Fragment {
 
     private void onLoggedIn(String login) {
         this.login = login;
+        YandexMetrica.reportEvent(MetricEventNames.VISITED_ACCOUNT);
         clientOnLoggedIn();
         askServerToFillFavoriteAuthors(login);
         askServerToFillFavoriteGenres(login);
@@ -308,6 +292,7 @@ public class CabinetFragment extends Fragment {
 
     private void tryToServerLogin(UserEntity userEntity) {
         onAuthProcessStarted();
+        YandexMetrica.reportEvent(MetricEventNames.TRIED_TO_AUTH);
         userApi.tryLogin(userEntity).enqueue(new Callback<Boolean>() {
             @Override
             public void onResponse(@NotNull Call<Boolean> call, @NotNull Response<Boolean> response) {
@@ -326,6 +311,7 @@ public class CabinetFragment extends Fragment {
                     ).show();
                     return;
                 }
+                YandexMetrica.reportEvent(MetricEventNames.AUTHED_SUCCESSFULLY);
                 saveLoginData(userEntity.getLogin(), userEntity.getPassword());
                 onLoggedIn(userEntity.getLogin());
             }

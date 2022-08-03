@@ -10,10 +10,9 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.muzkat.model.request.AddMusicRequest;
-import com.example.muzkat.model.request.CountInMetricRequest;
 import com.example.muzkat.retrofit.RetrofitService;
-import com.example.muzkat.retrofit.api.MetricApi;
 import com.example.muzkat.retrofit.api.MusicApi;
+import com.yandex.metrica.YandexMetrica;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -26,7 +25,6 @@ public class AddMusicActivity extends AppCompatActivity {
     private EditText etAuthor;
     private EditText etGenre;
     private MusicApi musicApi;
-    private MetricApi metricApi;
 
     private Button bAddMusic;
     private ProgressBar pbLoading;
@@ -46,9 +44,9 @@ public class AddMusicActivity extends AppCompatActivity {
         etGenre = findViewById(R.id.etGenre);
         RetrofitService retrofitService = new RetrofitService();
         musicApi = retrofitService.getRetrofit().create(MusicApi.class);
-        metricApi = retrofitService.getRetrofit().create(MetricApi.class);
 
        bAddMusic.setOnClickListener(v -> askServerToAddMusic());
+        YandexMetrica.reportEvent(MetricEventNames.STARTED_ADDING_MUSIC);
     }
 
     private void askServerToAddMusic() {
@@ -64,21 +62,6 @@ public class AddMusicActivity extends AppCompatActivity {
             ).show();
             return;
         }
-
-        CountInMetricRequest countInMetricRequest = new CountInMetricRequest();
-        countInMetricRequest.setLogin(getIntent().getStringExtra(CabinetFragment.EXTRA_LOGIN));
-        countInMetricRequest.setMetricName(Metrics.ADDED_MUSIC);
-        metricApi.countUser(countInMetricRequest).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(@NotNull Call<Void> call, @NotNull Response<Void> response) {
-
-            }
-
-            @Override
-            public void onFailure(@NotNull Call<Void> call, @NotNull Throwable t) {
-
-            }
-        });
 
         AddMusicRequest addMusicRequest = new AddMusicRequest();
         addMusicRequest.setMusicName(musicName);
@@ -106,6 +89,7 @@ public class AddMusicActivity extends AppCompatActivity {
                         feedback,
                         Toast.LENGTH_SHORT
                 ).show();
+                YandexMetrica.reportEvent(MetricEventNames.ADDED_MUSIC);
                 finish();
             }
 

@@ -11,6 +11,7 @@ import com.example.muzkat.model.request.AddFavAuthorRequest;
 import com.example.muzkat.model.request.AddFavGenreRequest;
 import com.example.muzkat.retrofit.RetrofitService;
 import com.example.muzkat.retrofit.api.UserApi;
+import com.yandex.metrica.YandexMetrica;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -27,6 +28,7 @@ public class AddFavGenreActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_fav_genre);
         initComponents();
+        YandexMetrica.reportEvent(MetricEventNames.STARTED_ADDING_PREFS);
     }
 
     private void initComponents() {
@@ -52,6 +54,7 @@ public class AddFavGenreActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NotNull Call<Void> call, @NotNull Response<Void> response) {
                 findViewById(R.id.pbLoadingAddGenre).setVisibility(View.GONE);
+                YandexMetrica.reportEvent(MetricEventNames.ADDED_PREFS);
                 finish();
             }
 
