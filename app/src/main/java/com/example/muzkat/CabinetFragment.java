@@ -324,9 +324,6 @@ public class CabinetFragment extends Fragment {
                         "Server is not responding. Try again later.",
                         Toast.LENGTH_SHORT
                 ).show();
-                Logger.getLogger(mainActivity.getClass().getName()).log(
-                        Level.SEVERE, "Server is not .", t
-                );
             }
         });
     }

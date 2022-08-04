@@ -78,17 +78,17 @@ public class AddMusicActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
-                String feedback;
-                if (response.body()) {
-                    feedback = "Successfully added the music to a music list.";
-                } else {
-                    feedback = "Failed to add the music to the music list.";
+                if (!response.body()) {
+                    Toast.makeText(
+                            AddMusicActivity.this,
+                            "Failed to add the music to the music list. " +
+                                    "Perhaps the music already exists.",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    return;
                 }
-                Toast.makeText(
-                        AddMusicActivity.this,
-                        feedback,
-                        Toast.LENGTH_SHORT
-                ).show();
+
+                Toast.makeText(AddMusicActivity.this, "Successfully added the music to a music list.", Toast.LENGTH_SHORT).show();
                 YandexMetrica.reportEvent(MetricEventNames.ADDED_MUSIC);
                 finish();
             }

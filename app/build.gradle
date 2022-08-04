@@ -23,10 +23,12 @@ android {
 
     buildTypes {
         debug {
+            debuggable true
             buildConfigField 'String', 'SERVER_URL', '"http://' + getLocalIPv4() + ':8080"'
             signingConfig signingConfigs.debug
         }
         release {
+            debuggable true
             buildConfigField 'String', 'SERVER_URL', '"https://muzkat-server.herokuapp.com"'
             signingConfig signingConfigs.debug
         }

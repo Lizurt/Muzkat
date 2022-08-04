@@ -31,10 +31,10 @@ public interface UserApi {
     Call<Set<AuthorEntity>> getFavAuthors(@Path("login") String login);
 
     @POST("/user/add-fav-author")
-    Call<Void> addFavAuthor(@Body AddFavAuthorRequest addFavAuthorRequest);
+    Call<Boolean> addFavAuthor(@Body AddFavAuthorRequest addFavAuthorRequest);
 
     @POST("/user/add-fav-genre")
-    Call<Void> addFavGenre(@Body AddFavGenreRequest addFavGenreRequest);
+    Call<Boolean> addFavGenre(@Body AddFavGenreRequest addFavGenreRequest);
 
     @POST("/user/del-fav-author")
     Call<Void> delFavAuthor(@Body DeleteFavAuthorRequest deleteFavAuthorRequest);

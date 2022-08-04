@@ -14,8 +14,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Muzkat"
         android:usesCleartextTraffic="true">
-        <activity android:name=".AddFavGenreActivity" />
-        <activity android:name=".AddFavAuthorActivity" />
+        <activity
+            android:name=".AddFavGenreActivity"
+            android:label="Add a favorite genre"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".AddFavAuthorActivity"
+            android:label="Add a favorite author"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".AddMusicActivity"
             android:label="Add music"
