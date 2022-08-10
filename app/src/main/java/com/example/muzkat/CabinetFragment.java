@@ -1,10 +1,15 @@
 package com.example.muzkat;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -36,8 +41,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -68,6 +71,9 @@ public class CabinetFragment extends Fragment {
     private ConstraintLayout csAnon;
     private ConstraintLayout csDeanon;
 
+    private ActivityResultLauncher<Intent> iarlAddAuthorActivity;
+    private ActivityResultLauncher<Intent> iarlAddGenreActivity;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +90,53 @@ public class CabinetFragment extends Fragment {
         sharedPreferences = mainActivity.getSharedPreferences(
                 MainActivity.PREFS_NAME,
                 Context.MODE_PRIVATE
+        );
+        registerActivityResultLaunchers();
+    }
+
+    private void registerActivityResultLaunchers() {
+        iarlAddAuthorActivity = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                (ActivityResultCallback<ActivityResult>) result -> {
+                    if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
+                        return;
+                    }
+                    String authorName = result.getData().getStringExtra(
+                            AddFavAuthorActivity.EXTRA_AUTHOR_NAME
+                    );
+                    if (authorName == null || authorName.isEmpty()) {
+                        return;
+                    }
+                    AuthorAdapter authorAdapter = (AuthorAdapter) rvFavAuthors.getAdapter();
+                    if (authorAdapter == null) {
+                        return;
+                    }
+                    AuthorEntity authorEntity = new AuthorEntity();
+                    authorEntity.setName(authorName);
+                    authorAdapter.insertItem(authorEntity);
+                }
+        );
+
+        iarlAddGenreActivity = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                (ActivityResultCallback<ActivityResult>) result -> {
+                    if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
+                        return;
+                    }
+                    String genreName = result.getData().getStringExtra(
+                            AddFavGenreActivity.EXTRA_GENRE_NAME
+                    );
+                    if (genreName == null || genreName.isEmpty()) {
+                        return;
+                    }
+                    GenreAdapter genreAdapter = (GenreAdapter) rvFavGenres.getAdapter();
+                    if (genreAdapter == null) {
+                        return;
+                    }
+                    GenreEntity genreEntity = new GenreEntity();
+                    genreEntity.setName(genreName);
+                    genreAdapter.insertItem(genreEntity);
+                }
         );
     }
 
@@ -134,14 +187,15 @@ public class CabinetFragment extends Fragment {
     private void onAddFavGenreButtonClicked(View view) {
         Intent intent = new Intent(mainActivity, AddFavGenreActivity.class);
         intent.putExtra(EXTRA_LOGIN, login);
-        startActivity(intent);
 
+        iarlAddGenreActivity.launch(intent);
     }
 
     private void onAddFavAuthorButtonClicked(View view) {
         Intent intent = new Intent(mainActivity, AddFavAuthorActivity.class);
         intent.putExtra(EXTRA_LOGIN, login);
-        startActivity(intent);
+
+        iarlAddAuthorActivity.launch(intent);
     }
 
     private void saveLoginData(String login, String password) {

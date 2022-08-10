@@ -47,8 +47,7 @@ public class AuthorAdapter extends RecyclerView.Adapter<AuthorHolder> {
             DeleteFavAuthorRequest deleteFavAuthorRequest = new DeleteFavAuthorRequest();
             deleteFavAuthorRequest.setLogin(login);
             deleteFavAuthorRequest.setAuthorName(result.getTvAuthorName().getText().toString());
-            view.findViewById(R.id.bRemoveAuthor).setVisibility(View.GONE);
-            view.findViewById(R.id.pbLoadingRemAuthor).setVisibility(View.VISIBLE);
+            onRemoveRequestSent(view);
             userApi.delFavAuthor(deleteFavAuthorRequest).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(@NotNull Call<Void> call, @NotNull Response<Void> response) {
@@ -56,12 +55,12 @@ public class AuthorAdapter extends RecyclerView.Adapter<AuthorHolder> {
                     authors.remove(pos);
                     notifyItemRemoved(pos);
                     notifyItemRangeChanged(pos, authors.size());
+                    onRemoveResponseGot(view);
                 }
 
                 @Override
                 public void onFailure(@NotNull Call<Void> call, @NotNull Throwable t) {
-                    view.findViewById(R.id.bRemoveAuthor).setVisibility(View.VISIBLE);
-                    view.findViewById(R.id.pbLoadingRemAuthor).setVisibility(View.GONE);
+                    onRemoveResponseGot(view);
                     Toast.makeText(
                             view.getContext(),
                             "Failed to remove the author from favorites.",
@@ -72,6 +71,22 @@ public class AuthorAdapter extends RecyclerView.Adapter<AuthorHolder> {
         });
         return result;
     }
+
+    private void onRemoveRequestSent(View view) {
+        view.findViewById(R.id.bRemoveAuthor).setVisibility(View.GONE);
+        view.findViewById(R.id.pbLoadingRemAuthor).setVisibility(View.VISIBLE);
+    }
+
+    private void onRemoveResponseGot(View view) {
+        view.findViewById(R.id.bRemoveAuthor).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.pbLoadingRemAuthor).setVisibility(View.GONE);
+    }
+
+    public void insertItem(AuthorEntity authorEntity) {
+        authors.add(authorEntity);
+        notifyItemInserted(authors.size() - 1);
+    }
+
 
     @Override
     public void onBindViewHolder(@NonNull AuthorHolder holder, int position) {

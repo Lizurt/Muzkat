@@ -2,6 +2,8 @@ package com.example.muzkat;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -9,6 +11,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.muzkat.model.entity.GenreEntity;
 import com.example.muzkat.model.request.AddFavAuthorRequest;
 import com.example.muzkat.model.request.AddFavGenreRequest;
 import com.example.muzkat.retrofit.RetrofitService;
@@ -27,6 +30,8 @@ public class AddFavGenreActivity extends AppCompatActivity {
     private EditText etGenreName;
     private ProgressBar pbLoading;
     private Button bAdd;
+
+    public static final String EXTRA_GENRE_NAME = "GENRE_NAME";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +63,11 @@ public class AddFavGenreActivity extends AppCompatActivity {
         addFavGenreRequest.setGenreName(genreName);
         addFavGenreRequest.setLogin(getIntent().getStringExtra(CabinetFragment.EXTRA_LOGIN));
         onAddRequestSent();
-        userApi.addFavGenre(addFavGenreRequest).enqueue(new Callback<Boolean>() {
+        userApi.addFavGenre(addFavGenreRequest).enqueue(new Callback<GenreEntity>() {
             @Override
-            public void onResponse(@NotNull Call<Boolean> call, @NotNull Response<Boolean> response) {
+            public void onResponse(@NotNull Call<GenreEntity> call, @NotNull Response<GenreEntity> response) {
                 onAddRequestFinished();
-                if (response.body() == null || !response.body()) {
+                if (response.body() == null) {
                     Toast.makeText(AddFavGenreActivity.this,
                             "Failed to add the genre to favorites. " +
                                     "Perhaps there is no music with such genre.",
@@ -70,18 +75,25 @@ public class AddFavGenreActivity extends AppCompatActivity {
                     return;
                 }
                 YandexMetrica.reportEvent(MetricEventNames.ADDED_PREFS);
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra(AddFavGenreActivity.EXTRA_GENRE_NAME, response.body().getName());
+                setResult(Activity.RESULT_OK, resultIntent);
                 finish();
             }
 
             @Override
-            public void onFailure(@NotNull Call<Boolean> call, @NotNull Throwable t) {
+            public void onFailure(@NotNull Call<GenreEntity> call, @NotNull Throwable t) {
                 onAddRequestFinished();
                 findViewById(R.id.pbLoadingAddGenre).setVisibility(View.GONE);
                 Toast.makeText(
                         AddFavGenreActivity.this,
-                        "Failed to add the genre to favorites.",
+                        "Failed to add the genre to favorites. " +
+                                "Perhaps there is no music with such genre.",
                         Toast.LENGTH_SHORT
                 ).show();
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra(AddFavGenreActivity.EXTRA_GENRE_NAME, "");
+                setResult(Activity.RESULT_CANCELED, resultIntent);
                 finish();
             }
         });

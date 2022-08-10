@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.muzkat.R;
+import com.example.muzkat.model.entity.AuthorEntity;
 import com.example.muzkat.model.entity.GenreEntity;
 import com.example.muzkat.model.request.DeleteFavGenreRequest;
 import com.example.muzkat.retrofit.api.UserApi;
@@ -45,8 +46,7 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreHolder> {
             DeleteFavGenreRequest deleteFavGenreRequest = new DeleteFavGenreRequest();
             deleteFavGenreRequest.setLogin(login);
             deleteFavGenreRequest.setGenreName(result.getTvGenreName().getText().toString());
-            view.findViewById(R.id.bRemoveGenre).setVisibility(View.GONE);
-            view.findViewById(R.id.pbLoadingRemGenre).setVisibility(View.VISIBLE);
+            onRemoveRequestSent(view);
             userApi.delFavGenre(deleteFavGenreRequest).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(@NotNull Call<Void> call, @NotNull Response<Void> response) {
@@ -54,12 +54,12 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreHolder> {
                     genres.remove(pos);
                     notifyItemRemoved(pos);
                     notifyItemRangeChanged(pos, genres.size());
+                    onRemoveResponseGot(view);
                 }
 
                 @Override
                 public void onFailure(@NotNull Call<Void> call, @NotNull Throwable t) {
-                    view.findViewById(R.id.bRemoveGenre).setVisibility(View.VISIBLE);
-                    view.findViewById(R.id.pbLoadingRemGenre).setVisibility(View.GONE);
+                    onRemoveResponseGot(view);
                     Toast.makeText(
                             view.getContext(),
                             "Failed to remove the genre from favorites.",
@@ -69,6 +69,21 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreHolder> {
             });
         });
         return result;
+    }
+
+    private void onRemoveRequestSent(View view) {
+        view.findViewById(R.id.bRemoveGenre).setVisibility(View.GONE);
+        view.findViewById(R.id.pbLoadingRemGenre).setVisibility(View.VISIBLE);
+    }
+
+    private void onRemoveResponseGot(View view) {
+        view.findViewById(R.id.bRemoveGenre).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.pbLoadingRemGenre).setVisibility(View.GONE);
+    }
+
+    public void insertItem(GenreEntity genreEntity) {
+        genres.add(genreEntity);
+        notifyItemInserted(genres.size() - 1);
     }
 
     @Override
