@@ -23,10 +23,12 @@ android {
 
     buildTypes {
         debug {
+            debuggable true
             buildConfigField 'String', 'SERVER_URL', '"http://' + getLocalIPv4() + ':8080"'
             signingConfig signingConfigs.debug
         }
         release {
+            debuggable true
             buildConfigField 'String', 'SERVER_URL', '"https://muzkat-server.herokuapp.com"'
             signingConfig signingConfigs.debug
         }
@@ -38,6 +40,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.yandex.android:mobmetricalib:5.0.0'
     implementation "androidx.fragment:fragment:1.4.1"
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.6.0'

@@ -34,12 +34,6 @@ public class AuthorAdapter extends RecyclerView.Adapter<AuthorHolder> {
         this.login = login;
     }
 
-    /**
-     * Automatically being called when a view holder is being created
-     * @param parent
-     * @param viewType
-     * @return
-     */
     @NonNull
     @Override
     public AuthorHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -53,8 +47,7 @@ public class AuthorAdapter extends RecyclerView.Adapter<AuthorHolder> {
             DeleteFavAuthorRequest deleteFavAuthorRequest = new DeleteFavAuthorRequest();
             deleteFavAuthorRequest.setLogin(login);
             deleteFavAuthorRequest.setAuthorName(result.getTvAuthorName().getText().toString());
-            view.findViewById(R.id.bRemoveAuthor).setVisibility(View.GONE);
-            view.findViewById(R.id.pbLoadingRemAuthor).setVisibility(View.VISIBLE);
+            onRemoveRequestSent(view);
             userApi.delFavAuthor(deleteFavAuthorRequest).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(@NotNull Call<Void> call, @NotNull Response<Void> response) {
@@ -62,12 +55,12 @@ public class AuthorAdapter extends RecyclerView.Adapter<AuthorHolder> {
                     authors.remove(pos);
                     notifyItemRemoved(pos);
                     notifyItemRangeChanged(pos, authors.size());
+                    onRemoveResponseGot(view);
                 }
 
                 @Override
                 public void onFailure(@NotNull Call<Void> call, @NotNull Throwable t) {
-                    view.findViewById(R.id.bRemoveAuthor).setVisibility(View.VISIBLE);
-                    view.findViewById(R.id.pbLoadingRemAuthor).setVisibility(View.GONE);
+                    onRemoveResponseGot(view);
                     Toast.makeText(
                             view.getContext(),
                             "Failed to remove the author from favorites.",
@@ -79,21 +72,28 @@ public class AuthorAdapter extends RecyclerView.Adapter<AuthorHolder> {
         return result;
     }
 
-    /**
-     * Automatically being called when a view holder is being binded
-     * @param holder
-     * @param position
-     */
+    private void onRemoveRequestSent(View view) {
+        view.findViewById(R.id.bRemoveAuthor).setVisibility(View.GONE);
+        view.findViewById(R.id.pbLoadingRemAuthor).setVisibility(View.VISIBLE);
+    }
+
+    private void onRemoveResponseGot(View view) {
+        view.findViewById(R.id.bRemoveAuthor).setVisibility(View.VISIBLE);
+        view.findViewById(R.id.pbLoadingRemAuthor).setVisibility(View.GONE);
+    }
+
+    public void insertItem(AuthorEntity authorEntity) {
+        authors.add(authorEntity);
+        notifyItemInserted(authors.size() - 1);
+    }
+
+
     @Override
     public void onBindViewHolder(@NonNull AuthorHolder holder, int position) {
         AuthorEntity authorEntity = authors.get(position);
         holder.getTvAuthorName().setText(authorEntity.getName());
     }
 
-    /**
-     * Gets amount of list items
-     * @return
-     */
     @Override
     public int getItemCount() {
         return authors.size();

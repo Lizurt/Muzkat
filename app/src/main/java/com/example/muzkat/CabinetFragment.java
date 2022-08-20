@@ -1,10 +1,15 @@
 package com.example.muzkat;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -30,21 +35,17 @@ import com.example.muzkat.retrofit.api.AuthorApi;
 import com.example.muzkat.retrofit.api.GenreApi;
 import com.example.muzkat.retrofit.api.MusicApi;
 import com.example.muzkat.retrofit.api.UserApi;
+import com.yandex.metrica.YandexMetrica;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Handles almost all the cabinet interface logic
- */
 public class CabinetFragment extends Fragment {
     public final static String EXTRA_LOGIN = "LOGIN";
 
@@ -70,10 +71,9 @@ public class CabinetFragment extends Fragment {
     private ConstraintLayout csAnon;
     private ConstraintLayout csDeanon;
 
-    /**
-     * Is automatically being called when the fragment is being created
-     * @param savedInstanceState
-     */
+    private ActivityResultLauncher<Intent> iarlAddAuthorActivity;
+    private ActivityResultLauncher<Intent> iarlAddGenreActivity;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,15 +91,55 @@ public class CabinetFragment extends Fragment {
                 MainActivity.PREFS_NAME,
                 Context.MODE_PRIVATE
         );
+        registerActivityResultLaunchers();
     }
 
-    /**
-     * Is automatically being called when the fragment view is being created
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return
-     */
+    private void registerActivityResultLaunchers() {
+        iarlAddAuthorActivity = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                (ActivityResultCallback<ActivityResult>) result -> {
+                    if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
+                        return;
+                    }
+                    String authorName = result.getData().getStringExtra(
+                            AddFavAuthorActivity.EXTRA_AUTHOR_NAME
+                    );
+                    if (authorName == null || authorName.isEmpty()) {
+                        return;
+                    }
+                    AuthorAdapter authorAdapter = (AuthorAdapter) rvFavAuthors.getAdapter();
+                    if (authorAdapter == null) {
+                        return;
+                    }
+                    AuthorEntity authorEntity = new AuthorEntity();
+                    authorEntity.setName(authorName);
+                    authorAdapter.insertItem(authorEntity);
+                }
+        );
+
+        iarlAddGenreActivity = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                (ActivityResultCallback<ActivityResult>) result -> {
+                    if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
+                        return;
+                    }
+                    String genreName = result.getData().getStringExtra(
+                            AddFavGenreActivity.EXTRA_GENRE_NAME
+                    );
+                    if (genreName == null || genreName.isEmpty()) {
+                        return;
+                    }
+                    GenreAdapter genreAdapter = (GenreAdapter) rvFavGenres.getAdapter();
+                    if (genreAdapter == null) {
+                        return;
+                    }
+                    GenreEntity genreEntity = new GenreEntity();
+                    genreEntity.setName(genreName);
+                    genreAdapter.insertItem(genreEntity);
+                }
+        );
+    }
+
     @Override
     public View onCreateView(
             LayoutInflater inflater,
@@ -109,11 +149,6 @@ public class CabinetFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_cabinet, container, false);
     }
 
-    /**
-     * Is automatically being called when the fragment view is created
-     * @param view
-     * @param savedInstanceState
-     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -130,6 +165,7 @@ public class CabinetFragment extends Fragment {
         this.rvFavGenres.setLayoutManager(new LinearLayoutManager(view.getContext()));
         rvFavGenres.setAdapter(null);
 
+        YandexMetrica.reportEvent(MetricEventNames.VISISTED_AUTH_SCREEN);
         tryAutoLogin();
     }
 
@@ -151,14 +187,15 @@ public class CabinetFragment extends Fragment {
     private void onAddFavGenreButtonClicked(View view) {
         Intent intent = new Intent(mainActivity, AddFavGenreActivity.class);
         intent.putExtra(EXTRA_LOGIN, login);
-        startActivity(intent);
 
+        iarlAddGenreActivity.launch(intent);
     }
 
     private void onAddFavAuthorButtonClicked(View view) {
         Intent intent = new Intent(mainActivity, AddFavAuthorActivity.class);
         intent.putExtra(EXTRA_LOGIN, login);
-        startActivity(intent);
+
+        iarlAddAuthorActivity.launch(intent);
     }
 
     private void saveLoginData(String login, String password) {
@@ -182,6 +219,7 @@ public class CabinetFragment extends Fragment {
 
     private void onLoggedIn(String login) {
         this.login = login;
+        YandexMetrica.reportEvent(MetricEventNames.VISITED_ACCOUNT);
         clientOnLoggedIn();
         askServerToFillFavoriteAuthors(login);
         askServerToFillFavoriteGenres(login);
@@ -308,6 +346,7 @@ public class CabinetFragment extends Fragment {
 
     private void tryToServerLogin(UserEntity userEntity) {
         onAuthProcessStarted();
+        YandexMetrica.reportEvent(MetricEventNames.TRIED_TO_AUTH);
         userApi.tryLogin(userEntity).enqueue(new Callback<Boolean>() {
             @Override
             public void onResponse(@NotNull Call<Boolean> call, @NotNull Response<Boolean> response) {
@@ -326,6 +365,7 @@ public class CabinetFragment extends Fragment {
                     ).show();
                     return;
                 }
+                YandexMetrica.reportEvent(MetricEventNames.AUTHED_SUCCESSFULLY);
                 saveLoginData(userEntity.getLogin(), userEntity.getPassword());
                 onLoggedIn(userEntity.getLogin());
             }
@@ -338,9 +378,6 @@ public class CabinetFragment extends Fragment {
                         "Server is not responding. Try again later.",
                         Toast.LENGTH_SHORT
                 ).show();
-                Logger.getLogger(mainActivity.getClass().getName()).log(
-                        Level.SEVERE, "Server is not .", t
-                );
             }
         });
     }

@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name=".MuzkatApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -13,21 +14,36 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Muzkat"
         android:usesCleartextTraffic="true">
-        <activity android:name=".AddFavGenreActivity" />
-        <activity android:name=".AddFavAuthorActivity" />
+        <activity
+            android:name=".SplashScreen"
+            android:exported="true"
+            android:theme="@style/Theme.Muzkat.Splash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".AddFavGenreActivity"
+            android:label="Add a favorite genre"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".AddFavAuthorActivity"
+            android:label="Add a favorite author"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".AddMusicActivity"
             android:label="Add music"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
-            android:exported="true"
             android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 
